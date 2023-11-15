@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def date_to_str(date: datetime):
-    if isinstance(date, datetime) and not pd.isnat(date):
+    if isinstance(date, datetime) and not pd.isna(date):
         return date.strftime("%Y%m%d")
     else:
         raise ValueError(
