@@ -11,7 +11,7 @@ class WakachiMatcher:
         self.__wakachi = MeCab.Tagger(f"-Owakati -d {dicdir}")
 
     def __parse(self, string):
-        if len(string.split()) != 1:
+        if len(string.split()) > 1:
             raise ValueError("input must not contain spaces")
         return self.__wakachi.parse(string).split()
 
