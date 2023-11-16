@@ -1,7 +1,7 @@
 import MeCab
 import unidic
 
-from ..algorithm import partial_match, partial_match_multi
+from ..algorithm import partial_match
 from .join_str import join_str
 
 
@@ -15,18 +15,10 @@ class WakachiMatcher:
             raise ValueError("input must not contain spaces")
         return self.__wakachi.parse(string).split()
 
-    def match(self, pattern: str, string: str):
-        p = self.__parse(pattern)
-        s = self.__parse(string)
-        matches = partial_match(p, s)
-
-        s_lengths = list(map(len, s))
-        return [(sum(s_lengths[:m]), sum(s_lengths[: m + len(p)])) for m in matches]
-
-    def match_multi(self, patterns: str, string: str):
+    def match(self, patterns: str, string: str):
         p = [self.__parse(pattern) for pattern in patterns]
         s = self.__parse(string)
-        matches = partial_match_multi(p, s)
+        matches = partial_match(p, s)
 
         s_lengths = list(map(len, s))
         return [
