@@ -28,3 +28,10 @@ def test_overlapped_matches(matcher):
     string = "おはようございます。おはようございます。おはようございます。"
     expected_result = [(0, 14)]
     assert matcher.match(pattern, string) == expected_result
+
+
+def test_multiple_patterns_single_match(matcher):
+    patterns = ["春の訪れ", "春の訪れを"]
+    string = "桜の花が風に舞い、春の訪れを感じる。桜の花の美しさと儚さが心を打つ。"
+    expected_result = [((9, 14), "春の訪れを")]
+    assert matcher.match_multi(patterns, string) == expected_result
