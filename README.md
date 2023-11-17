@@ -12,8 +12,10 @@ pip install git+https://github.com/s-shibasaki/omisoshiru.git
 
 ## Usage
 
+For example, to use the `WakachiReplacer` class, follow these steps:
+
 ```python
-from omisoshiru.text import replace_text_ranges
+from omisoshiru.text import WakachiReplacer
 
 replace_dict = {
     "りんご": "果物",
