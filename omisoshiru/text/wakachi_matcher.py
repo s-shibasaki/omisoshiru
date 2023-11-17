@@ -1,23 +1,15 @@
-import MeCab
-import unidic
-
 from ..algorithm import partial_match
 from .join_str import join_str
+from .wakachi import Wakachi
 
 
 class WakachiMatcher:
     def __init__(self):
-        dicdir = unidic.DICDIR.replace("\\", "/")
-        self.__wakachi = MeCab.Tagger(f"-Owakati -d {dicdir}")
-
-    def __parse(self, string):
-        if len(string.split()) > 1:
-            raise ValueError("input must not contain spaces")
-        return self.__wakachi.parse(string).split()
+        self.__wakachi = Wakachi()
 
     def match(self, patterns: str, string: str):
-        p = [self.__parse(pattern) for pattern in patterns]
-        s = self.__parse(string)
+        p = [self.__wakachi.parse(pattern) for pattern in patterns]
+        s = self.__wakachi.parse(string)
         matches = partial_match(p, s)
 
         s_lengths = list(map(len, s))
