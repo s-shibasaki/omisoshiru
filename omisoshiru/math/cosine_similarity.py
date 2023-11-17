@@ -16,9 +16,13 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray, pairwise: Optional[bool] = N
         return pairwise_cosine_similarity(a, b)
 
     else:
-        dot_product = np.diagonal(np.dot(a, b.T))
+        dot_product = np.einsum("ij,ij->i", a, b)
+        # dot_product = np.diagonal(np.dot(a, b.T))
+        # Potential memory issues here
+
         norm_a = np.linalg.norm(a, axis=1)
         norm_b = np.linalg.norm(b, axis=1)
+
         cosine_sim = dot_product / (norm_a * norm_b)
 
         return cosine_sim
