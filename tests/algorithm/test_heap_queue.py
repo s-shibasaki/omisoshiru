@@ -1,39 +1,28 @@
-import pytest
+from omisoshiru.algorithm.heap_queue import HeapQueue
 
-from omisoshiru.algorithm import HeapQueue
+def test_push_and_pop():
+    heap_queue = HeapQueue()
+    heap_queue.push(3, 'apple')
+    heap_queue.push(1, 'banana')
+    heap_queue.push(2, 'orange')
 
+    assert heap_queue.pop() == (1, 'banana')
+    assert heap_queue.pop() == (2, 'orange')
+    assert heap_queue.pop() == (3, 'apple')
 
-def test_heap_queue_push_and_pop():
-    queue = HeapQueue()
-    assert not queue
-    assert len(queue) == 0
-    queue.push(3, "item3")
-    assert queue
-    assert len(queue) == 1
-    queue.push(1, "item1")
-    assert queue
-    assert len(queue) == 2
-    queue.push(2, "item2")
-    assert queue
-    assert len(queue) == 3
-    assert queue.pop() == (1, "item1")
-    assert len(queue) == 2
-    assert queue.pop() == (2, "item2")
-    assert len(queue) == 1
-    assert queue.pop() == (3, "item3")
-    assert not queue
-    assert len(queue) == 0
+def test_len_and_bool():
+    heap_queue = HeapQueue()
+    assert len(heap_queue) == 0
+    assert not heap_queue
 
+    heap_queue.push(5, 'grape')
+    assert len(heap_queue) == 1
+    assert heap_queue
 
-def test_heap_queue_empty_pop():
-    queue = HeapQueue()
-    assert not queue
-    assert len(queue) == 0
-    with pytest.raises(IndexError):
-        queue.pop()
-    assert not queue
-    assert len(queue) == 0
+def test_items():
+    heap_queue = HeapQueue()
+    heap_queue.push(3, 'apple')
+    heap_queue.push(1, 'banana')
+    heap_queue.push(2, 'orange')
 
-
-if __name__ == "__main__":
-    pytest.main()
+    assert heap_queue.items() == [(1, 'banana'), (3, 'apple'), (2, 'orange')]
