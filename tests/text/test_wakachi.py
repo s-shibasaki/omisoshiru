@@ -10,7 +10,7 @@ def wakachi():
 
 @pytest.fixture
 def wakachi_preserve_space():
-    return Wakachi(preserve_space=True)
+    return Wakachi(allow_whitespace=True)
 
 
 # 正常系のテストケース

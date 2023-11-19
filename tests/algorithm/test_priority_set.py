@@ -1,8 +1,8 @@
 import pytest
-from omisoshiru.algorithm import PriorityQueue
+from omisoshiru.algorithm import PrioritySet
 
 def test_add():
-    pq = PriorityQueue(lambda x, y: x == y)
+    pq = PrioritySet(lambda x, y: x == y)
 
     pq.add(3, 'apple')
     pq.add(1, 'banana')
@@ -11,7 +11,7 @@ def test_add():
     assert pq.items() == [(1, 'banana'), (2, 'orange'), (3, 'apple')]
 
 def test_pop():
-    pq = PriorityQueue(lambda x, y: x == y)
+    pq = PrioritySet(lambda x, y: x == y)
 
     pq.add(3, 'apple')
     pq.add(1, 'banana')
@@ -25,7 +25,7 @@ def test_pop():
 def test_custom_equality_check():
     # Custom equality check function: Compare the lengths of strings
     custom_eq_check = lambda x, y: len(x) == len(y)
-    pq = PriorityQueue(custom_eq_check)
+    pq = PrioritySet(custom_eq_check)
 
     pq.add(3, 'apple')
     pq.add(1, 'banana')
