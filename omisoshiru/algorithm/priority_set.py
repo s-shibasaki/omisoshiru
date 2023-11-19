@@ -1,7 +1,7 @@
 import bisect
 from typing import Callable, Any
 
-class PriorityQueue:
+class PrioritySet:
     def __init__(self, equality_check: Callable[[Any], bool]):
         self._data = []
         self.equality_check = equality_check
