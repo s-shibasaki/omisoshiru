@@ -12,11 +12,11 @@ def unify_hz(
 
     Args:
         text (Union[str, List[str]]): The input text or list of texts to be processed.
-        on_error (Optional[Literal["raise", "return_empty", "return_none"]]): Specifies the
-            behavior in case of invalid input type. Defaults to "raise".
-            - "raise": Raises a TypeError for invalid input type.
-            - "return_empty": Returns an empty string or list.
-            - "return_none": Returns None.
+        on_error (Optional[Literal]): Specifies the
+            behavior in case of invalid input type. Defaults to "raise".<br />
+            "raise": Raises a TypeError for invalid input type.<br />
+            "return_empty": Returns an empty string or list.<br />
+            "return_none": Returns None.<br />
 
     Returns:
         Union[str, List[str]]: The text or list of texts with unified character width.

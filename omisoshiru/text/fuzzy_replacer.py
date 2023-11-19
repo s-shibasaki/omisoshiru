@@ -7,40 +7,19 @@ from .unify_hz import unify_hz
 
 
 class FuzzyReplacer:
-    """
-    A FuzzyReplacer class that replaces input text with the most similar string from a reference list.
-
-    Args:
-        reference (List[str]): List of reference strings.
-
-    Attributes:
-        reference (List[str]): List of reference strings.
-        unified_reference (List[str]): List of unified reference strings.
-
-    Methods:
-        replace(text: Union[str, List[str]]) -> Union[str, List[str]]:
-            Replaces the input text with the most similar string from the reference list.
-
-        _unify_text(text: str) -> str:
-            Unifies the input text by converting it to lowercase after applying full-width and half-width character conversion.
-
-    Example:
-        >>> replacer = FuzzyReplacer(["apple", "orange", "banana"])
-        >>> replacer.replace("applle")
-        "apple"
-        >>> replacer.replace(["applle", "bannaana"])
-        ["apple", "banana"]
-    """
-
     def __init__(self, reference: List[str]):
         """
-        Initializes a FuzzyReplacer instance with a reference list.
+        A FuzzyReplacer class that replaces input text with the most similar string from a reference list.
 
         Args:
             reference (List[str]): List of reference strings.
 
-        Returns:
-            None
+        Example:
+            >>> replacer = FuzzyReplacer(["apple", "orange", "banana"])
+            >>> replacer.replace("applle")
+            "apple"
+            >>> replacer.replace(["applle", "bannaana"])
+            ["apple", "banana"]
         """
         self.reference = reference
         self.unified_reference = [self._unify_text(text) for text in reference]
@@ -54,13 +33,6 @@ class FuzzyReplacer:
 
         Returns:
             Union[str, List[str]]: Replaced text or list of replaced texts.
-
-        Example:
-            >>> replacer = FuzzyReplacer(["apple", "orange", "banana"])
-            >>> replacer.replace("applle")
-            "apple"
-            >>> replacer.replace(["applle", "bannaana"])
-            ["apple", "banana"]
         """
         if isinstance(text, str):
             unified_text = self._unify_text(text)

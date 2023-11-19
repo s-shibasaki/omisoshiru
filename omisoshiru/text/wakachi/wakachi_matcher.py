@@ -6,34 +6,17 @@ from .wakachi import Wakachi
 
 
 class WakachiMatcher:
-    """
-    A class for matching patterns in Japanese text using MeCab.
-
-    Attributes:
-        None
-
-    Methods:
-        match(patterns: List[str], string: str) -> list:
-            Matches patterns in the input string and returns the positions and matched patterns.
-
-    Examples:
-        >>> wakachi_matcher = WakachiMatcher()
-        >>> pattern_list = ["桜の花"]
-        >>> input_text = "桜の花が風に舞い、春の訪れを感じる。桜の花の美しさと儚さが心を打つ。"
-        >>> matches = wakachi_matcher.match(pattern_list, input_text)
-        >>> print(matches)
-        [((0, 3), "桜の花"), ((18, 21), "桜の花")]
-    """
-
     def __init__(self):
         """
-        Initializes a WakachiMatcher instance.
+        A class for matching patterns in Japanese text using MeCab.
 
-        Args:
-            None
-
-        Returns:
-            None
+        Examples:
+            >>> wakachi_matcher = WakachiMatcher()
+            >>> pattern_list = ["桜の花"]
+            >>> input_text = "桜の花が風に舞い、春の訪れを感じる。桜の花の美しさと儚さが心を打つ。"
+            >>> matches = wakachi_matcher.match(pattern_list, input_text)
+            >>> print(matches)
+            [((0, 3), "桜の花"), ((18, 21), "桜の花")]
         """
         self.__wakachi = Wakachi()
 

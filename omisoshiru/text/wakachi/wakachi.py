@@ -5,36 +5,21 @@ import unidic_lite
 
 
 class Wakachi:
-    """
-    A class for tokenizing Japanese text using MeCab.
-
-    Attributes:
-        allow_whitespace (Optional[bool]): If True, whitespace characters are allowed in the input text.
-            If False, an error will be raised if whitespace characters are present.
-            Defaults to None, in which case the default behavior is False.
-
-    Methods:
-        parse(string: str) -> list: Tokenizes the input string using MeCab.
-
-    Examples:
-        >>> wakachi = Wakachi(allow_whitespace=True)
-        >>> input_text = "これはテストです。"
-        >>> tokens = wakachi.parse(input_text)
-        >>> print(tokens)
-        ['これ', 'は', 'テスト', 'です', '。']
-    """
-
     def __init__(self, allow_whitespace: Optional[bool] = None):
         """
-        Initializes a Wakachi instance.
+        A class for tokenizing Japanese text using MeCab.
 
         Args:
             allow_whitespace (Optional[bool]): If True, whitespace characters are allowed in the input text.
                 If False, an error will be raised if whitespace characters are present.
                 Defaults to None, in which case the default behavior is False.
 
-        Returns:
-            None
+        Examples:
+            >>> wakachi = Wakachi(allow_whitespace=True)
+            >>> input_text = "これはテストです。"
+            >>> tokens = wakachi.parse(input_text)
+            >>> print(tokens)
+            ['これ', 'は', 'テスト', 'です', '。']
         """
         dicdir = unidic_lite.DICDIR.replace("\\", "/")
         self.__wakachi = MeCab.Tagger(f"-Owakati -d {dicdir}")

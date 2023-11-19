@@ -3,40 +3,23 @@ from typing import Any, List, Tuple
 
 
 class HeapQueue:
-    """
-    A priority queue implementation using the heapq module.
-
-    Attributes:
-        _heap (List[Tuple[int, Any]]): A list representing the heap storing elements with their priority values.
-
-    Methods:
-        push(value, item): Pushes an element with its priority value onto the heap.
-        pop(): Pops and returns the element with the highest priority from the heap.
-        __len__(): Returns the number of elements in the heap.
-        __bool__(): Returns True if the heap is non-empty, False otherwise.
-        items(): Returns a list of elements in the heap.
-
-    Example:
-        >>> priority_queue = HeapQueue()
-        >>> priority_queue.push(3, 'apple')
-        >>> priority_queue.push(1, 'banana')
-        >>> priority_queue.push(2, 'orange')
-        >>> priority_queue.items()
-        [(1, 'banana'), (3, 'apple'), (2, 'orange')]
-        >>> priority_queue.pop()
-        (1, 'banana')
-        >>> len(priority_queue)
-        2
-        >>> bool(priority_queue)
-        True
-    """
-
     def __init__(self) -> None:
         """
-        Initializes a HeapQueue instance.
+        A priority queue implementation using the heapq module.
 
-        Returns:
-            None
+        Example:
+            >>> priority_queue = HeapQueue()
+            >>> priority_queue.push(3, 'apple')
+            >>> priority_queue.push(1, 'banana')
+            >>> priority_queue.push(2, 'orange')
+            >>> priority_queue.items()
+            [(1, 'banana'), (3, 'apple'), (2, 'orange')]
+            >>> priority_queue.pop()
+            (1, 'banana')
+            >>> len(priority_queue)
+            2
+            >>> bool(priority_queue)
+            True
         """
         self._heap: List[Tuple[int, Any]] = []
 
