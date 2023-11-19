@@ -28,14 +28,8 @@ jobs:
       run: |
         pdoc --html -o docs --force omisoshiru
 
-    - name: Commit and push changes
-      run: |
-        git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
-        git config --local user.email "${GITHUB_ACTOR}@github.com"
-        git config --local user.name "${GITHUB_ACTOR}"
-        git checkout -b gh-pages
-        if (git diff --shortstat | grep '[0-9]'); then \
-          git add .; \
-          git commit -m "Generating docs via GitHub Actions"; \
-          git push origin gh-pages; \
-        fi
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
