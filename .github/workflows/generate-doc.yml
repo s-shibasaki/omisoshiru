@@ -30,9 +30,12 @@ jobs:
 
     - name: Commit and push changes
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git checkout -b gh-pages
-        git add .
-        git commit -m "Generate and deploy documentation"
-        git push origin gh-pages
+        git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+        git config --local user.email "${GITHUB_ACTOR}@github.com"
+        git config --local user.name "${GITHUB_ACTOR}"
+        if (git diff --shortstat | grep '[0-9]'); then \
+          git checkout -b gh-pages; \
+          git add .; \
+          git commit -m "Generating docs via GitHub Actions"; \
+          git push origin gh-pages; \
+        fi
