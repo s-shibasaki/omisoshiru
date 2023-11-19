@@ -1,7 +1,7 @@
 # omisoshiru
 
 [![Under Development](https://img.shields.io/badge/status-under%20development-orange)](https://shields.io/)
-![Build Status](https://github.com/s-shibasaki/omisoshiru/actions/workflows/python-package.yml/badge.svg)
+![Build Status](https://github.com/s-shibasaki/omisoshiru/actions/workflows/test.yml/badge.svg)
 
 
 **omisoshiru** is a collection of utility modules for various tasks. It provides a set of submodules for tasks such as text processing, graph algorithms, date-time operations, mathematical calculations, and more.
