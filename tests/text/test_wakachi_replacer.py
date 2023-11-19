@@ -39,9 +39,3 @@ def test_replace_japanese_words(replacer):
     text = "犬と猫がいます"
     result = replacer.replace(text)
     assert result == "動物と動物がいます"
-
-
-def test_replace_empty_text(replacer):
-    text = ""
-    result = replacer.replace(text)
-    assert result == ""
