@@ -1,18 +1,20 @@
-from .date_to_str import date_to_str
-
-__all__ = ["date_to_str"]
-
 """
-Datetime Utilities Package
+Custom datetime utilities.
 
-This package provides utility functions for working with datetime objects.
+This module provides custom utilities for handling datetime objects.
 
-Modules:
-- date_to_str: Function to convert a datetime object to a string in the format '%Y%m%d'.
+Available functions:
+    - date_to_str: Convert a datetime object to a string in the format '%Y%m%d'.
 
 Example:
     >>> from omisoshiru.datetime import date_to_str
-    >>> date = datetime(2023, 11, 1)
-    >>> date_to_str(date)
-    '20231101'
+    >>> from datetime import datetime
+    >>> my_date = datetime(2023, 1, 1)
+    >>> date_string = date_to_str(my_date)
+    >>> print(date_string)
+    '20230101'
 """
+
+from .date_to_str import date_to_str
+
+__all__ = ["date_to_str"]

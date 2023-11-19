@@ -1,6 +1,6 @@
 from typing import Dict
 
-from .replace_text_ranges import replace_text_ranges
+from ..replace_text_ranges import replace_text_ranges
 from .wakachi_matcher import WakachiMatcher
 
 

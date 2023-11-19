@@ -1,7 +1,7 @@
 from typing import List
 
-from ..algorithm import partial_match
-from .join_str import join_str
+from ...algorithm import partial_match
+from ..join_str import join_str
 from .wakachi import Wakachi
 
 

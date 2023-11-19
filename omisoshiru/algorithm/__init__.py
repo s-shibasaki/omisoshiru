@@ -1,27 +1,21 @@
-from .bfs_select_nodes import bfs_select_nodes
-from .heap_queue import HeapQueue
-from .partial_match import partial_match
-from .priority_set import PrioritySet
-
-__all__ = [
-    "bfs_select_nodes",
-    "HeapQueue",
-    "partial_match",
-    "PrioritySet",
-]
-
 """
-Algorithms Package
+Module providing various algorithms for pattern matching.
 
-This package contains various algorithms implemented for common use cases.
+This module includes functions for finding partial matches in a target list.
 
-Modules:
-- bfs_select_nodes: Breadth-First Search (BFS) algorithm for selecting nodes in a graph.
-- heap_queue: Priority queue implementation using the heapq module.
-- partial_match: Function for finding partial matches of patterns in a target list.
-- priority_set: Priority set implementation for maintaining a sorted set of unique elements.
+Available functions:
+    - partial_match: Find partial matches of patterns in a target list.
 
 Example:
-    >>> from omisoshiru.algorithm import bfs_select_nodes, HeapQueue, partial_match, PrioritySet
-    >>> # Use the algorithms in your application
+    >>> from omisoshiru.algorithm import partial_match
+    >>> patterns = [['a', 'b'], ['b', 'c'], ['d']]
+    >>> target = ['a', 'b', 'c', 'd', 'e']
+    >>> partial_match(patterns, target)
+    [(0, ['a', 'b']), (2, ['b', 'c']), (3, ['d'])]
 """
+
+from .partial_match import partial_match
+
+__all__ = [
+    "partial_match",
+]

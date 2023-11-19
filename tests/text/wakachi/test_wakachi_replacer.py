@@ -1,6 +1,6 @@
 import pytest
 
-from omisoshiru.text import WakachiReplacer
+from omisoshiru.text.wakachi import WakachiReplacer
 
 
 @pytest.fixture

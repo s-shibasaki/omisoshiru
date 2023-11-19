@@ -1,39 +1,78 @@
 """
-omisoshiru: A Python Package for Text Processing and Data Analysis
+omisoshiru: A collection of utility modules for various tasks.
 
-`omisoshiru` is a Python package that provides utility functions for various tasks, including text processing and data analysis. It includes modules for tasks such as text unification, replacement, tokenization, and mathematical operations.
+This package provides a set of utility modules for tasks such as text processing, graph algorithms, date-time operations, mathematical calculations, and more.
 
-Package Structure:
-- omisoshiru/text: Contains modules related to text processing.
-- omisoshiru/math: Includes modules related to mathematical operations.
-- omisoshiru/datetime: Provides utilities for date and time operations.
+Available submodules:
+    - algorithm: Algorithms and utility functions.
+    - collections: Custom data structures and collection-related utilities.
+    - datetime: Date and time manipulation functions.
+    - graph: Graph-related algorithms and utilities.
+    - math: Mathematical functions and calculations.
+    - text: Text processing utilities.
 
-Text Processing Modules:
-- FuzzyReplacer: Replaces text based on a reference list using fuzzy matching.
-- join_str: Concatenates a list of strings using the specified separator.
-- replace_text_ranges: Replaces specified text ranges in a string.
-- unify_hz: Unifies character width in a string.
-- Wakachi: Tokenizes Japanese text using MeCab.
-- Many other modules for various text processing tasks.
+Examples:
+    1. Text Processing:
+        >>> from omisoshiru.text.wakachi import Wakachi, WakachiMatcher, WakachiReplacer
+        >>> wakachi = Wakachi(allow_whitespace=True)
+        >>> input_text = "これはテストです。"
+        >>> tokens = wakachi.parse(input_text)
+        >>> print(tokens)
+        ['これ', 'は', 'テスト', 'です', '。']
 
-Mathematical Operations:
-- cosine_similarity: Calculates the cosine similarity of vectors.
+        >>> wakachi_matcher = WakachiMatcher()
+        >>> pattern_list = ["桜の花"]
+        >>> matches = wakachi_matcher.match(pattern_list, input_text)
+        >>> print(matches)
+        [((0, 3), "桜の花"), ((18, 21), "桜の花")]
 
-Date and Time Processing:
-- date_to_str: Converts a date to a string.
+        >>> wakachi_replacer = WakachiReplacer({"りんご": "フルーツ", "ばなな": "フルーツ"})
+        >>> replaced_text = wakachi_replacer.replace("りんごとばななが好きです。")
+        >>> print(replaced_text)
+        "フルーツとフルーツが好きです。"
 
-Usage:
-```python
-# Example of using FuzzyReplacer
-from omisoshiru.text import FuzzyReplacer
+        >>> from omisoshiru.text.fuzzy_replacer import FuzzyReplacer
+        >>> fuzzy_replacer = FuzzyReplacer(["apple", "orange", "banana"])
+        >>> replaced_fuzzy = fuzzy_replacer.replace("applle")
+        >>> print(replaced_fuzzy)
+        "apple"
 
-replacer = FuzzyReplacer(["apple", "banana", "orange"])
-result = replacer.replace("appl")
-print(result)  # Output: "apple"
-```
+    2. Graph Algorithms:
+        >>> import networkx as nx
+        >>> from omisoshiru.graph import bfs_select_nodes
+        >>> # Create a simple undirected graph
+        >>> graph = nx.Graph()
+        >>> graph.add_edges_from([(1, 2), (1, 3), (2, 4), (3, 5), (4, 5)])
+        >>> selected_nodes = bfs_select_nodes(graph, start_node=1, target_count=3)
+        >>> print(selected_nodes)
+        [1, 2, 3]
 
-For more details and examples, refer to the documentation.
 
-Author: S. Shibasaki
-License: MIT License
+    3. Date-Time Operations:
+        >>> from omisoshiru.datetime import date_to_str
+        >>> from datetime import datetime
+        >>> date_obj = datetime(2023, 1, 1)
+        >>> formatted_date = date_to_str(date_obj)
+        >>> print(formatted_date)
+        '20230101'
+
+    4. Mathematical Calculations:
+        >>> from omisoshiru.math import cosine_similarity
+        >>> import numpy as np
+        >>> a = np.array([[1, 2, 3], [4, 5, 6]])
+        >>> b = np.array([[7, 8, 9], [10, 11, 12]])
+        >>> similarity_values = cosine_similarity(a, b)
+        >>> print(similarity_values)
+        array([0.95941195, 0.99614986])
+
+    5. Collection Utilities:
+        >>> from omisoshiru.collections import PriorityQueue
+        >>> pq = PriorityQueue()
+        >>> pq.push(3, priority=2)
+        >>> pq.push(1, priority=1)
+        >>> pq.push(2, priority=3)
+        >>> popped_item = pq.pop()
+        >>> print(popped_item)
+        (1, 1)
 """
+from . import algorithm, collections, datetime, graph, math, text

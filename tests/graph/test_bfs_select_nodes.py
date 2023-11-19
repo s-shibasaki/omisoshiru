@@ -1,7 +1,7 @@
 import networkx as nx
 import pytest
 
-from omisoshiru.algorithm import bfs_select_nodes
+from omisoshiru.graph import bfs_select_nodes
 
 
 @pytest.fixture
