@@ -1,5 +1,5 @@
 import bisect
-from typing import Callable, Any, Optional
+from typing import Any, Callable, Optional
 
 
 class PrioritySet:
@@ -46,7 +46,9 @@ class PrioritySet:
             None
         """
         self._data = []
-        self._equality_check = equality_check if equality_check is not None else lambda x, y: x == y
+        self._equality_check = (
+            equality_check if equality_check is not None else lambda x, y: x == y
+        )
 
     def add(self, value: Any, item: Any) -> None:
         """
