@@ -1,7 +1,7 @@
 from typing import Optional
 
 import MeCab
-import unidic
+import unidic_lite
 
 
 class Wakachi:
@@ -36,7 +36,7 @@ class Wakachi:
         Returns:
             None
         """
-        dicdir = unidic.DICDIR.replace("\\", "/")
+        dicdir = unidic_lite.DICDIR.replace("\\", "/")
         self.__wakachi = MeCab.Tagger(f"-Owakati -d {dicdir}")
         self.allow_whitespace = (
             allow_whitespace if allow_whitespace is not None else False
