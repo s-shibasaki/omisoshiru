@@ -4,7 +4,9 @@ from typing import Any, Callable, Optional
 
 class PrioritySet:
     def __init__(
-        self, equality_check: Optional[Callable[[Any, Any], bool]] = None
+        self,
+        equality_check: Optional[Callable[[Any, Any], bool]] = None,
+        ascending: bool = True,
     ) -> None:
         """
         A priority set implementation that maintains a sorted set of unique elements based on their priority values.
@@ -12,9 +14,10 @@ class PrioritySet:
         Args:
             equality_check (Optional[Callable[[Any, Any], bool]]): A callable that determines equality between two elements.
                 Defaults to None, in which case the default equality function (x == y) is used.
+            ascending (bool): If True, the priority set will be in ascending order; if False, in descending order.
 
         Example:
-            >>> priority_set = PrioritySet(lambda x, y: x == y)
+            >>> priority_set = PrioritySet(lambda x, y: x == y, ascending=True)
             >>> priority_set.add(3, 'apple')
             >>> priority_set.add(1, 'banana')
             >>> priority_set.add(2, 'orange')
@@ -29,6 +32,7 @@ class PrioritySet:
         self._equality_check = (
             equality_check if equality_check is not None else lambda x, y: x == y
         )
+        self._ascending = ascending
 
     def add(self, value: Any, item: Any) -> None:
         """
@@ -41,6 +45,8 @@ class PrioritySet:
         Returns:
             None
         """
+        if not self._ascending:
+            value = -value  # Invert the value back for descending order
         for i, existing in enumerate(self._data):
             if self._equality_check(item, existing[1]):
                 j = bisect.bisect(self._data, (value, item))
@@ -58,7 +64,11 @@ class PrioritySet:
         Returns:
             Any: The element with the highest priority.
         """
-        return self._data.pop(0)
+
+        value, item = self._data.pop(0)
+        if not self._ascending:
+            value = -value  # Invert the value back for descending order
+        return value, item
 
     def items(self) -> list:
         """
@@ -67,4 +77,8 @@ class PrioritySet:
         Returns:
             list: List of elements in the priority set.
         """
-        return self._data
+        if self._ascending:
+            return self._data
+        else:
+            # Invert the values back for descending order
+            return [(-value, item) for value, item in self._data]
