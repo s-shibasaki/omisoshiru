@@ -3,9 +3,12 @@ from typing import Any, List, Tuple
 
 
 class HeapQueue:
-    def __init__(self) -> None:
+    def __init__(self, ascending: bool = True) -> None:
         """
         A priority queue implementation using the heapq module.
+
+        Args:
+            ascending (bool): If True, the heap will be in ascending order; if False, in descending order.
 
         Example:
             >>> priority_queue = HeapQueue()
@@ -22,6 +25,7 @@ class HeapQueue:
             True
         """
         self._heap: List[Tuple[int, Any]] = []
+        self._ascending = ascending
 
     def push(self, value: int, item: Any) -> None:
         """
@@ -34,6 +38,8 @@ class HeapQueue:
         Returns:
             None
         """
+        if not self._ascending:
+            value = -value  # Invert the value for descending order
         heapq.heappush(self._heap, (value, item))
 
     def pop(self) -> Tuple[int, Any]:
@@ -43,7 +49,10 @@ class HeapQueue:
         Returns:
             Tuple[int, Any]: The element with the highest priority.
         """
-        return heapq.heappop(self._heap)
+        value, item = heapq.heappop(self._heap)
+        if not self._ascending:
+            value = -value  # Invert the value back for descending order
+        return value, item
 
     def __len__(self) -> int:
         """
@@ -70,4 +79,8 @@ class HeapQueue:
         Returns:
             List[Tuple[int, Any]]: List of elements in the heap.
         """
-        return self._heap
+        if self._ascending:
+            return self._heap
+        else:
+            # Invert the values back for descending order
+            return [(-value, item) for value, item in self._heap]
