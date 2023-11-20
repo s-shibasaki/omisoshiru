@@ -10,6 +10,7 @@ def min_cost_within_n_hops(
     graph: nx.Graph,
     source_node: Any,
     max_hops: Optional[int] = 5,
+    max_nodes: Optional[int] = None,
     cost_type: Optional[Literal["cost", "weight"]] = "cost",
 ) -> PrioritySet:
     """
@@ -19,6 +20,7 @@ def min_cost_within_n_hops(
         graph (nx.Graph): The input graph.
         source_node (Any): The source node to start the traversal.
         max_hops (Optional[int]): The maximum number of hops to consider. Defaults to 5.
+        max_nodes (Optional[int]): The maximum number of nodes to visit. Defaults to None.
         cost_type (Optional[Literal]): The type of cost to consider.
             Valid values are "cost" or "weight". Defaults to "cost".
 
@@ -45,6 +47,7 @@ def min_cost_within_n_hops(
     priority_set = PrioritySet(
         equality_check=lambda x, y: x == y,
         ascending=ascending_order,
+        max_size=max_nodes,
     )
     priority_set.add(initial_cost, source_node)
 
