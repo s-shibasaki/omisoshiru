@@ -29,12 +29,10 @@ class PrioritySet:
             [(2, 'orange'), (3, 'apple')]
         """
         self._data = []
-        self._equality_check = (
-            equality_check if equality_check is not None else lambda x, y: x == y
-        )
+        self._equality_check = equality_check or (lambda x, y: x == y)
         self._ascending = ascending
 
-    def add(self, value: Any, item: Any) -> None:
+    def add(self, value: Any, item: Any) -> bool:
         """
         Adds an element with its priority value to the priority set.
 
@@ -43,19 +41,22 @@ class PrioritySet:
             item (Any): The element to be added.
 
         Returns:
-            None
+            bool: True if the element was added, False if not (due to equality condition).
         """
         if not self._ascending:
             value = -value  # Invert the value back for descending order
+
         for i, existing in enumerate(self._data):
             if self._equality_check(item, existing[1]):
                 j = bisect.bisect(self._data, (value, item))
                 if j <= i:
-                    del self._data[i]
-                    self._data.insert(j, (value, item))
-                break
+                    self._data[i] = (value, item)
+                    return True
+                else:
+                    return False
         else:
             bisect.insort(self._data, (value, item))
+            return True
 
     def pop(self) -> Any:
         """
@@ -64,7 +65,6 @@ class PrioritySet:
         Returns:
             Any: The element with the highest priority.
         """
-
         value, item = self._data.pop(0)
         if not self._ascending:
             value = -value  # Invert the value back for descending order
