@@ -3,7 +3,7 @@ from typing import Any, Literal, Optional
 
 import networkx as nx
 
-from omisoshiru.collections import PrioritySet
+from ..collections import PrioritySet, remove_item_from_deque
 
 
 def min_cost_within_n_hops(
@@ -60,7 +60,12 @@ def min_cost_within_n_hops(
 
             # Add the next node to the priority set if it has not been visited
             # and the maximum hop limit has not been reached
-            if priority_set.add(next_cost, next_node) and next_hop < max_hops:
+            succeed, removed = priority_set.add(next_cost, next_node)
+            if removed:
+                remove_item_from_deque(
+                    hop_cost_node_queue, lambda x: x[2] == removed[1]
+                )
+            if succeed and next_hop < max_hops:
                 hop_cost_node_queue.append((next_hop, next_cost, next_node))
 
     return priority_set
