@@ -50,7 +50,8 @@ class PrioritySet:
             if self._equality_check(item, existing[1]):
                 j = bisect.bisect(self._data, (value, item))
                 if j <= i:
-                    self._data[i] = (value, item)
+                    del self._data[i]
+                    self._data.insert(j, (value, item))
                     return True
                 else:
                     return False
