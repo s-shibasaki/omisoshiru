@@ -6,8 +6,6 @@ This module provides custom implementations of data structures and algorithms fo
 
 from .heap_queue import HeapQueue
 from .priority_set import PrioritySet
+from .remove_item_from_deque import remove_item_from_deque
 
-__all__ = [
-    "HeapQueue",
-    "PrioritySet",
-]
+__all__ = ["HeapQueue", "PrioritySet", "remove_item_from_deque"]
