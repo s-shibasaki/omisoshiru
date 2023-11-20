@@ -92,3 +92,12 @@ class PrioritySet:
             bool: True if the priority set is non-empty, False otherwise.
         """
         return bool(self._data)
+
+    def __iter__(self):
+        """
+        Returns an iterator for the priority set.
+
+        Returns:
+            iterator: Iterator for the priority set.
+        """
+        return iter(self.items())

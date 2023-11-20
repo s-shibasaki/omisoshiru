@@ -101,3 +101,27 @@ def test_priority_set_bool():
     priority_set.add(3, "apple")
 
     assert bool(priority_set) == True
+
+
+def test_priority_set_iteration():
+    priority_set = PrioritySet(ascending=True)
+
+    priority_set.add(3, "apple")
+    priority_set.add(1, "banana")
+    priority_set.add(2, "orange")
+
+    result = list(iter(priority_set))
+
+    assert result == [(1, "banana"), (2, "orange"), (3, "apple")]
+
+
+def test_priority_set_iteration_descending():
+    priority_set = PrioritySet(ascending=False)
+
+    priority_set.add(3, "apple")
+    priority_set.add(1, "banana")
+    priority_set.add(2, "orange")
+
+    result = list(iter(priority_set))
+
+    assert result == [(3, "apple"), (2, "orange"), (1, "banana")]
