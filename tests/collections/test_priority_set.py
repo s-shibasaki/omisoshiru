@@ -6,48 +6,48 @@ from omisoshiru.collections.priority_set import PrioritySet
 def test_priority_set_add_overwrite_higher_priority():
     priority_set = PrioritySet(ascending=True)
 
-    assert priority_set.add(3, "apple") == True
-    assert priority_set.add(4, "banana") == True
-    assert priority_set.add(2, "orange") == True
+    assert priority_set.add(3, "apple") == (True, None)
+    assert priority_set.add(4, "banana") == (True, None)
+    assert priority_set.add(2, "orange") == (True, None)
 
     # Higher priority, should overwrite
-    assert priority_set.add(1, "banana") == True
+    assert priority_set.add(1, "banana") == (True, (4, "banana"))
     assert priority_set.items() == [(1, "banana"), (2, "orange"), (3, "apple")]
 
 
 def test_priority_set_add_overwrite_lower_priority():
     priority_set = PrioritySet(ascending=True)
 
-    assert priority_set.add(3, "apple") == True
-    assert priority_set.add(4, "banana") == True
-    assert priority_set.add(2, "orange") == True
+    assert priority_set.add(3, "apple") == (True, None)
+    assert priority_set.add(4, "banana") == (True, None)
+    assert priority_set.add(2, "orange") == (True, None)
 
     # Same priority, should not overwrite
-    assert priority_set.add(5, "banana") == False
+    assert priority_set.add(5, "banana") == (False, None)
     assert priority_set.items() == [(2, "orange"), (3, "apple"), (4, "banana")]
 
 
 def test_priority_set_add_overwrite_higher_priority_descending():
     priority_set = PrioritySet(ascending=False)
 
-    assert priority_set.add(3, "apple") == True
-    assert priority_set.add(4, "banana") == True
-    assert priority_set.add(2, "orange") == True
+    assert priority_set.add(3, "apple") == (True, None)
+    assert priority_set.add(4, "banana") == (True, None)
+    assert priority_set.add(2, "orange") == (True, None)
 
     # Higher priority, should overwrite
-    assert priority_set.add(5, "banana") == True
+    assert priority_set.add(5, "banana") == (True, (4, "banana"))
     assert priority_set.items() == [(5, "banana"), (3, "apple"), (2, "orange")]
 
 
 def test_priority_set_add_overwrite_lower_priority_descending():
     priority_set = PrioritySet(ascending=False)
 
-    assert priority_set.add(3, "apple") == True
-    assert priority_set.add(4, "banana") == True
-    assert priority_set.add(2, "orange") == True
+    assert priority_set.add(3, "apple") == (True, None)
+    assert priority_set.add(4, "banana") == (True, None)
+    assert priority_set.add(2, "orange") == (True, None)
 
     # Same priority, should not overwrite
-    assert priority_set.add(1, "banana") == False
+    assert priority_set.add(1, "banana") == (False, None)
     assert priority_set.items() == [(4, "banana"), (3, "apple"), (2, "orange")]
 
 
@@ -125,3 +125,25 @@ def test_priority_set_iteration_descending():
     result = list(iter(priority_set))
 
     assert result == [(3, "apple"), (2, "orange"), (1, "banana")]
+
+
+def test_priority_set_max_size():
+    priority_set = PrioritySet(ascending=True, max_size=2)
+
+    assert priority_set.add(3, "apple") == (True, None)
+    assert priority_set.add(1, "banana") == (True, None)
+
+    # Adding a new item should remove the lowest priority item
+    assert priority_set.add(2, "orange") == (True, (3, "apple"))
+    assert priority_set.items() == [(1, "banana"), (2, "orange")]
+
+
+def test_priority_set_max_size_descending():
+    priority_set = PrioritySet(ascending=False, max_size=2)
+
+    assert priority_set.add(3, "apple") == (True, None)
+    assert priority_set.add(1, "banana") == (True, None)
+
+    # Adding a new item should remove the lowest priority item
+    assert priority_set.add(2, "orange") == (True, (1, "banana"))
+    assert priority_set.items() == [(3, "apple"), (2, "orange")]
