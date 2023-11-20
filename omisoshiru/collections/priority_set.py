@@ -82,3 +82,12 @@ class PrioritySet:
         else:
             # Invert the values back for descending order
             return [(-value, item) for value, item in self._data]
+
+    def __bool__(self) -> bool:
+        """
+        Returns True if the priority set is non-empty, False otherwise.
+
+        Returns:
+            bool: True if the priority set is non-empty, False otherwise.
+        """
+        return bool(self._data)

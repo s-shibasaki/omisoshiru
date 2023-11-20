@@ -83,5 +83,16 @@ def test_custom_equality_check_descending():
     assert pq.items() == [(3, "apple"), (2, "orange")]
 
 
+def test_bool():
+    # Test the __bool__ method
+
+    pq_empty = PrioritySet(lambda x, y: x == y, ascending=True)
+    assert not pq_empty
+
+    pq_non_empty = PrioritySet(lambda x, y: x == y, ascending=True)
+    pq_non_empty.add(1, "apple")
+    assert pq_non_empty
+
+
 if __name__ == "__main__":
     pytest.main()
