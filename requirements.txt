@@ -2,6 +2,7 @@ mecab-python3
 mojimoji
 networkx
 pandas
+pyvis
 rapidfuzz
 scikit-learn
 unidic-lite
