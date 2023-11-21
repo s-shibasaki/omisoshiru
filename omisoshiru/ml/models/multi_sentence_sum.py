@@ -21,6 +21,7 @@ class MultiSentenceSum(nn.Module):
             "padding": True,
             "truncation": True,
         }
+        self.hidden_size = self._model.config.hidden_size
 
     def forward(self, sentences: List[List[str]], weights: torch.Tensor):
         """
