@@ -9,6 +9,7 @@ def model():
     return MultiSentenceSum("bert-base-uncased")
 
 
+@pytest.mark.slow
 def test_forward_pass_single_sentence(model):
     sentences = [["This is a test.", "Another sentence."]]
     weights = torch.tensor([[0.5, 0.7]])
@@ -21,6 +22,7 @@ def test_forward_pass_single_sentence(model):
     )  # Replace 768 with the actual hidden_size of your model
 
 
+@pytest.mark.slow
 def test_forward_pass_multiple_sentences(model):
     sentences = [
         ["This is a test.", "Another sentence."],
@@ -34,6 +36,11 @@ def test_forward_pass_multiple_sentences(model):
     assert result.shape == torch.Size(
         [2, 768]
     )  # Replace 768 with the actual hidden_size of your model
+
+
+@pytest.mark.slow
+def test_hidden_size(model):
+    assert model.hidden_size == 768
 
 
 if __name__ == "__main__":
