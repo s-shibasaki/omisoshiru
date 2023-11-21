@@ -40,7 +40,9 @@ class MultiSentenceSum(nn.Module):
         output_pool = []
         for sentence in zip(*sentences):
             # Tokenize the input sentences
-            inputs = self._tokenizer(sentence, **self._tokenization_options)
+            inputs = self._tokenizer(sentence, **self._tokenization_options).to(
+                next(self._model.parameters()).device
+            )
 
             # Pass the tokenized input through the transformer model and extract pooled output
             output_pool.append(self._model(**inputs).pooler_output)
