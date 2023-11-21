@@ -7,6 +7,12 @@ from transformers import AutoModel, AutoTokenizer
 
 class MultiSentenceSum(nn.Module):
     def __init__(self, pretrained_model_name):
+        """
+        Initializes an instance of the MultiSentenceSum model.
+
+        Args:
+            pretrained_model_name (str): The name of a pre-trained transformer model.
+        """
         super().__init__()
         self._model = AutoModel.from_pretrained(pretrained_model_name)
         self._tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
@@ -17,19 +23,31 @@ class MultiSentenceSum(nn.Module):
         }
 
     def forward(self, sentences: List[List[str]], weights: torch.Tensor):
-        """_summary_
+        """
+        Forward pass of the MultiSentenceSum model.
 
         Args:
-            sentences (List[List[str]]): shape: (num_sentences, num_batches)
-            weights (torch.Tensor): shape: (num_sentences, num_batches)
+            sentences (List[List[str]]): A list of sentences where each sentence is represented
+                as a list of strings. Shape: (num_batches, num_sentences).
+            weights (torch.Tensor): A tensor containing weights for each sentence. The weights
+                should have the same shape as the 'sentences' input. Shape: (num_batches, num_sentences).
 
         Returns:
-            _type_: _description_
+            torch.Tensor: Weighted sum of the pooled outputs from the transformer model for each sentence.
+                The output tensor has the shape (num_batches, hidden_size), where hidden_size
+                depends on the transformer model architecture.
         """
         output_pool = []
-        for sentence in sentences:
+        for sentence in zip(*sentences):
+            # Tokenize the input sentences
             inputs = self._tokenizer(sentence, **self._tokenization_options)
+
+            # Pass the tokenized input through the transformer model and extract pooled output
             output_pool.append(self._model(**inputs).pooler_output)
-        print(output_pool[0].size())
-        weighted_outputs = torch.stack(output_pool) * weights.unsqueeze(-1)
-        return weighted_outputs
+
+        # Stack the pooled outputs and apply weights
+        weighted_outputs = torch.stack(output_pool) * weights.permute(1, 0).unsqueeze(
+            -1
+        )
+
+        return weighted_outputs.sum(dim=0)
