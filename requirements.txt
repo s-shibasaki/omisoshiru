@@ -5,4 +5,6 @@ pandas
 pyvis
 rapidfuzz
 scikit-learn
+torch
+transformers
 unidic-lite
