@@ -19,9 +19,14 @@ class WakachiMatcher:
             >>> print(matches)
             [((0, 3), "桜の花"), ((18, 21), "桜の花")]
         """
-        self.__wakachi = Wakachi()
-        self._unify_hz = unify_hz
-        self._unify_hl = unify_hl
+        self.wakachi = Wakachi()
+        self.unify_hz = unify_hz
+        self.unify_hl = unify_hl
+
+    def _preprocess_string(self, string):
+        string = unify_hz(string) if self.unify_hz else string
+        string = string.lower() if self.unify_hl else string
+        return string
 
     def match(self, patterns: List[str], string: str) -> list:
         """
@@ -37,18 +42,14 @@ class WakachiMatcher:
         Notes:
             The positions in the returned tuples represent the start and end positions of the matched patterns.
         """
-        unified_patterns = unify_hz(patterns) if self._unify_hz else patterns
-        unified_patterns = (
-            [pattern.lower() for pattern in patterns]
-            if self._unify_hl
-            else unified_patterns
-        )
+        unified_patterns = [self._preprocess_string(pattern) for pattern in patterns]
+        unified_string = self._preprocess_string(string)
 
-        p = [self.__wakachi.parse(pattern) for pattern in unified_patterns]
-        s = self.__wakachi.parse(string)
+        p = [self.wakachi.parse(pattern) for pattern in unified_patterns]
+        s = self.wakachi.parse(unified_string)
         matches = partial_match(p, s)
 
-        s_lengths = list(map(len, s))
+        s_lengths = [len(segment) for segment in s]
         return [
             (
                 (sum(s_lengths[:m_pos]), sum(s_lengths[: m_pos + len(m_pat)])),
