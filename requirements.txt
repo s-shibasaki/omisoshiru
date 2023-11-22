@@ -6,5 +6,6 @@ pyvis
 rapidfuzz
 scikit-learn
 torch
+tqdm
 transformers
 unidic-lite

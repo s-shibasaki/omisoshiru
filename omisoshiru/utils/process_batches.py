@@ -3,6 +3,7 @@ from typing import Callable, Literal, Optional, Union
 import numpy as np
 import pandas as pd
 import torch
+from tqdm.auto import tqdm
 
 
 def process_batches(
@@ -57,7 +58,7 @@ def process_batches(
     ]
 
     # Apply the function to each batch
-    results = [function(batch) for batch in batches]
+    results = [function(batch) for batch in tqdm(batches)]
 
     if result_type is not None:
         axis = axis if axis is not None else 0
