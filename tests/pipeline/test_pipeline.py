@@ -1,72 +1,64 @@
 import os
-import shutil
-import tempfile
+from tempfile import TemporaryDirectory
 
-import nbformat
 import pytest
 
 from omisoshiru.pipeline import Catalog, Node, Run
 
 
 @pytest.fixture
-def temporary_directory(request):
-    temp_dir = tempfile.mkdtemp()
-    Catalog.set_pipeline_dir(temp_dir)
-
-    os.makedirs(os.path.join(temp_dir, "nodes", "node1"), exist_ok=True)
-    with open(
-        os.path.join(temp_dir, "nodes", "node1", "node1.ipynb"), "w", encoding="utf-8"
-    ) as f:
-        nbformat.write(
-            nbformat.from_dict(
-                {"cells": [], "metadata": {}, "nbformat": 4, "nbformat_minor": 5}
-            ),
-            f,
-        )
-
-    def cleanup():
-        shutil.rmtree(temp_dir)
-
-    request.addfinalizer(cleanup)
-    return temp_dir
+def temp_catalog_dir():
+    with TemporaryDirectory() as temp_dir:
+        Catalog.set_catalog_dir(temp_dir)
+        yield temp_dir
 
 
-def test_node_creation():
+def test_create_node(temp_catalog_dir):
+    node_name = "test_node"
     inputs = ["input1", "input2"]
     outputs = ["output1", "output2"]
     params = ["param1", "param2"]
-    node = Node("name", inputs, outputs, params)
-    assert node.name == "name"
-    assert node.inputs == inputs
-    assert node.outputs == outputs
-    assert node.params == params
-    assert node.runs == []
+
+    node = Node.create(node_name, inputs, outputs, params)
+
+    assert os.path.exists(node.get_file())
+    assert node.get(node_name) == node
 
 
-@pytest.mark.slow
-def test_run_creation(temporary_directory):
+def test_create_run(temp_catalog_dir):
+    Node.create("node1", [], ["input1"], []).run("run1", {}, {})
+    Node.create("node2", [], ["input2"], []).run("run2", {}, {})
+
+    node_name = "test_node"
+    run_name = "test_run"
     inputs = {
-        "input1": (
-            Run("run1", Node("node1", ["input1"], ["output1"], ["param1"]), {}, {}),
-            "file1",
-        )
+        "input1": {"node": "node1", "run": "run1", "data": "input1"},
+        "input2": {"node": "node2", "run": "run2", "data": "input2"},
     }
-    params = {"param1": "value1"}
-    node = Node("node1", ["input1"], ["output1"], ["param1"])
-    run = node.run("run1", inputs, params, timeout=60)
+    params = {"param1": "value1", "param2": "value2"}
+    kernel_name = "python3"
+    timeout = 600
 
-    assert run.name == "run1"
-    assert run.node == node
-    assert run.inputs == inputs
-    assert run.params == params
+    node = Node.create(node_name, inputs=[], outputs=[], params=[])
+    run = Run.create(node_name, run_name, inputs, params, kernel_name, timeout)
+
+    assert os.path.exists(run.get_dir())
+    assert run.get(node_name, run_name) == run
 
 
-@pytest.mark.slow
-def test_run_directory(temporary_directory):
-    node = Node("node1", ["input1"], ["output1"], ["param1"])
-    run = Run("run1", node, {}, {})
-    run_dir = run.get_dir()
-    expected_dir = os.path.join(temporary_directory, "runs", "run1")
+def test_catalog_load_save(temp_catalog_dir):
+    catalog = Catalog.load()
 
-    assert run_dir == expected_dir
-    assert os.path.exists(run_dir)
+    assert catalog.nodes == []
+    assert catalog.runs == []
+
+    # Modify catalog and save
+    node = Node.create("test_node", inputs=[], outputs=[], params=[])
+    run = Run.create(
+        "test_node", "test_run", inputs={}, params={}, kernel_name="", timeout=None
+    )
+
+    # Load catalog and check if modifications are applied
+    new_catalog = Catalog.load()
+    assert new_catalog.get_node("test_node") == node
+    assert new_catalog.get_run("test_node", "test_run") == run
