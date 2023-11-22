@@ -90,7 +90,7 @@ class Run:
             nbformat.write(nb, f)
 
     def get_dir(self) -> str:
-        return os.path.join(Catalog.get_catalog_dir(), "runs", self.name)
+        return os.path.join(Catalog.get_catalog_dir(), "runs", self.node, self.name)
 
 
 @dataclass
