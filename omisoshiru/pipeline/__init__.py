@@ -5,6 +5,6 @@ This module provides a simple pipeline framework for orchestrating and executing
 """
 
 
-from .pipeline import Node, Pipeline, Run
+from .pipeline import Catalog, Node, Run
 
-__all__ = ["Node", "Run", "Pipeline"]
+__all__ = ["Node", "Run", "Catalog"]

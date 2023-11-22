@@ -10,3 +10,4 @@ torch
 tqdm
 transformers
 unidic-lite
+dataclass-wizard
