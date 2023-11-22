@@ -5,6 +5,7 @@ import networkx as nx
 from pyvis.network import Network
 
 from ..collections import HeapQueue
+from ..text import join_str
 
 
 def create_tree_html(
@@ -67,7 +68,7 @@ def create_tree_html(
                 ]
                 label = "\n\n".join(
                     [
-                        f"[link {i}]\n"
+                        f"link[{i}]\n"
                         + "\n".join([f"{k}: {v}" for k, v in data.items()])
                         for i, data in enumerate(data)
                     ]
@@ -76,6 +77,17 @@ def create_tree_html(
                     [data["weight"] if "weight" in data else 1 for data in data]
                 )
                 queue.push(weight, (depth + 1, neighbor, node, label))
+
+    subgraph = nx.relabel_nodes(
+        subgraph,
+        {
+            node: join_str(
+                [f"node[{node}]"] + [f"{k}: {v}" for k, v in graph.nodes[node].items()],
+                "\n",
+            )
+            for node in subgraph.nodes()
+        },
+    )
 
     g = Network(
         "calc(100vh - 10px)", "calc(100vw - 6px)", notebook=True, cdn_resources="remote"
