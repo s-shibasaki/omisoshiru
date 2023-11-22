@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from ...algorithm import partial_match
 from ..join_str import join_str
@@ -7,16 +7,21 @@ from .wakachi import Wakachi
 
 
 class WakachiMatcher:
-    def __init__(self, unify_hz=False, unify_hl=False):
+    def __init__(
+        self, unify_hz: Optional[bool] = None, unify_hl: Optional[bool] = None
+    ):
         """
         A class for matching patterns in Japanese text using MeCab.
 
         Args:
-            unify_hz (bool, optional): Whether to unify half-width characters. Defaults to False.
-            unify_hl (bool, optional): Whether to unify characters to lowercase. Defaults to False.
+            unify_hz (bool, optional): Whether to unify half-width characters. Defaults to None.
+            unify_hl (bool, optional): Whether to unify characters to lowercase. Defaults to None.
 
         Examples:
+            Initialize WakachiMatcher:
             >>> wakachi_matcher = WakachiMatcher()
+
+            Provide a list of patterns and input text for matching:
             >>> pattern_list = ["桜の花"]
             >>> input_text = "桜の花が風に舞い、春の訪れを感じる。桜の花の美しさと儚さが心を打つ。"
             >>> matches = wakachi_matcher.match(pattern_list, input_text)
@@ -24,8 +29,8 @@ class WakachiMatcher:
             [((0, 3), "桜の花"), ((18, 21), "桜の花")]
         """
         self.wakachi = Wakachi()
-        self.unify_hz = unify_hz
-        self.unify_hl = unify_hl
+        self.unify_hz = unify_hz or False
+        self.unify_hl = unify_hl or False
 
     def _preprocess_string(self, string):
         """
