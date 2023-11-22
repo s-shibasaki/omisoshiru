@@ -59,6 +59,9 @@ def process_batches(
     # Apply the function to each batch
     results = [function(batch) for batch in batches]
 
+    if result_type is not None:
+        axis = axis if axis is not None else 0
+
     # Concatenate batches based on result_type
     if result_type == "numpy":
         results = np.concatenate(results, axis=axis)
