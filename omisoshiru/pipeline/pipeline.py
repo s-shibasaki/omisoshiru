@@ -78,7 +78,7 @@ class Run:
         )
         os.environ.update(**{f"PIPELINE_PARAM_{k}": v for k, v in self.params.items()})
 
-        with open(Node.get(self.node).get_file()) as f:
+        with open(Node.get(self.node).get_file(), encoding="utf-8") as f:
             nb = nbformat.read(f, as_version=4)
 
         ep = ExecutePreprocessor(kernel_name=kernel_name, timeout=timeout)
