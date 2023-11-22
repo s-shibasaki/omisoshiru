@@ -11,6 +11,10 @@ class WakachiMatcher:
         """
         A class for matching patterns in Japanese text using MeCab.
 
+        Args:
+            unify_hz (bool, optional): Whether to unify half-width characters. Defaults to False.
+            unify_hl (bool, optional): Whether to unify characters to lowercase. Defaults to False.
+
         Examples:
             >>> wakachi_matcher = WakachiMatcher()
             >>> pattern_list = ["桜の花"]
@@ -24,6 +28,15 @@ class WakachiMatcher:
         self.unify_hl = unify_hl
 
     def _preprocess_string(self, string):
+        """
+        Preprocesses the input string based on the unification settings.
+
+        Args:
+            string (str): The input string to be preprocessed.
+
+        Returns:
+            str: The preprocessed string.
+        """
         string = unify_hz(string) if self.unify_hz else string
         string = string.lower() if self.unify_hl else string
         return string
