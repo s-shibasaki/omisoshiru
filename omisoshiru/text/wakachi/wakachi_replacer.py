@@ -5,7 +5,7 @@ from .wakachi_matcher import WakachiMatcher
 
 
 class WakachiReplacer:
-    def __init__(self, replace_dict: Dict[str, str]):
+    def __init__(self, replace_dict: Dict[str, str], unify_hz=False, unify_hl=False):
         """
         A WakachiReplacer performs replacements in a given text based on a predefined dictionary.
 
@@ -20,7 +20,7 @@ class WakachiReplacer:
             >>> print(result)
             "フルーツとフルーツが好きです。"
         """
-        self.__matcher = WakachiMatcher()
+        self.__matcher = WakachiMatcher(unify_hz=unify_hz, unify_hl=unify_hl)
         self.replace_dict = replace_dict
 
     def replace(self, text: str) -> str:
