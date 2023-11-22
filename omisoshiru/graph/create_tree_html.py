@@ -44,7 +44,7 @@ def create_tree_html(
         create_tree_html(G, "output_tree.html", root_node=1)
     """
     if root_node is None:
-        nodes_with_edges = [node for node, degree in G.degree() if degree > 0]
+        nodes_with_edges = [node for node, degree in graph.degree() if degree > 0]
         root_node = random.choice(nodes_with_edges)
 
     # Initialize HeapQueue and subgraph
