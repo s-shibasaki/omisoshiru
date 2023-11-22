@@ -2,6 +2,27 @@
 Pipeline Module
 
 This module provides a simple pipeline framework for orchestrating and executing data processing tasks using Jupyter Notebooks.
+
+Classes:
+- Run: Dataclass representing a pipeline run with methods for creation, execution, and retrieval.
+- Node: Dataclass representing a processing node in the pipeline with methods for creation, execution, and file management.
+- Catalog: Dataclass representing the catalog of nodes and runs with methods for loading, saving, and retrieval.
+
+Note: This module assumes a directory structure where nodes and runs are organized within a catalog directory.
+
+Usage:
+1. Create nodes using the Node class, specifying input, output, and parameter names.
+2. Create pipeline runs using the Run class, associating them with specific nodes, input data, and parameters.
+3. Catalog keeps track of nodes and runs, allowing retrieval and persistence.
+
+Example:
+```python
+# Create a node
+node = Node.create(name="ProcessData", inputs=["input_data.csv"], outputs=["output_data.csv"], params=["param1", "param2"])
+
+# Create a run for the node
+run = node.run(name="Run1", inputs={"input_data.csv": {"node": "Source", "run": "Run1", "data": "source_data.csv"}}, params={"param1": "value1", "param2": "value2"}, kernel_name="python3", timeout=600)
+```
 """
 
 import os
