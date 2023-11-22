@@ -17,7 +17,7 @@ def test_create_tree_html():
     test_output_path = os.path.join(os.path.dirname(__file__), test_output_file)
 
     # Call the function with test data
-    create_tree_html(test_graph, test_root_node, test_output_path)
+    create_tree_html(test_graph, test_output_path, test_root_node)
 
     # Check if the output file exists
     assert os.path.exists(test_output_path)
