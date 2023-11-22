@@ -44,7 +44,7 @@ class WakachiMatcher:
             else unified_patterns
         )
 
-        p = [self.__wakachi.parse(pattern) for pattern in patterns]
+        p = [self.__wakachi.parse(pattern) for pattern in unified_patterns]
         s = self.__wakachi.parse(string)
         matches = partial_match(p, s)
 
