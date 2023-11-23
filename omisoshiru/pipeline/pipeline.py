@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional, TypedDict, Union
+from typing import Callable, ClassVar, Dict, List, Optional, TypedDict, Union
 
 import nbformat
 from dataclass_wizard import YAMLWizard
@@ -267,8 +267,8 @@ class Catalog(YAMLWizard):
     Represents the catalog containing nodes and runs.
     """
 
-    CATALOG_DIR: str = os.getcwd()
-    CATALOG_NAME: str = "catalog.yml"
+    CATALOG_DIR: ClassVar[str] = os.getcwd()
+    CATALOG_NAME: ClassVar[str] = "catalog.yml"
 
     nodes: List[Node]
     runs: List[Run]
