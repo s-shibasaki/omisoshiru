@@ -15,19 +15,16 @@ def temp_catalog_dir():
 
 def test_create_node(temp_catalog_dir):
     node_name = "test_node"
-    inputs = ["input1", "input2"]
-    outputs = ["output1", "output2"]
-    params = ["param1", "param2"]
 
-    node = Node.create(node_name, inputs, outputs, params)
+    node = Node.create(node_name)
 
     assert os.path.exists(node.get_file())
-    assert node.get(node_name) == node
+    assert Node.get(node_name) == node
 
 
 def test_create_run(temp_catalog_dir):
-    Node.create("node1", [], ["input1"], []).run("run1", {}, {})
-    Node.create("node2", [], ["input2"], []).run("run2", {}, {})
+    Node.create("node1").run("run1")
+    Node.create("node2").run("run2")
 
     node_name = "test_node"
     run_name = "test_run"
@@ -39,11 +36,11 @@ def test_create_run(temp_catalog_dir):
     kernel_name = "python3"
     timeout = 600
 
-    node = Node.create(node_name, inputs=[], outputs=[], params=[])
-    run = Run.create(node_name, run_name, inputs, params, kernel_name, timeout)
+    node = Node.create(node_name)
+    run = node.run(run_name, inputs, params, kernel_name, timeout)
 
     assert os.path.exists(run.get_dir())
-    assert run.get(node_name, run_name) == run
+    assert Run.get(node_name, run_name) == run
 
 
 def test_catalog_load_save(temp_catalog_dir):
@@ -53,10 +50,8 @@ def test_catalog_load_save(temp_catalog_dir):
     assert catalog.runs == []
 
     # Modify catalog and save
-    node = Node.create("test_node", inputs=[], outputs=[], params=[])
-    run = Run.create(
-        "test_node", "test_run", inputs={}, params={}, kernel_name="", timeout=None
-    )
+    node = Node.create("test_node")
+    run = node.run("test_run")
 
     # Load catalog and check if modifications are applied
     new_catalog = Catalog.load()

@@ -31,7 +31,7 @@ from typing import Any, Dict, List, Optional, Tuple, TypedDict
 
 import nbformat
 from dataclass_wizard import YAMLWizard
-from nbconvert.preprocessors import ExecutePreprocessor
+from nbconvert.preprocessors import ClearOutputPreprocessor, ExecutePreprocessor
 
 
 class InputDict(TypedDict):
@@ -48,9 +48,20 @@ class Run:
     params: Dict[str, str]
 
     @classmethod
-    def create(cls, node, name, inputs, params, kernel_name, timeout):
+    def create(
+        cls,
+        node: str,
+        name: str,
+        inputs: Optional[Dict[str, InputDict]] = None,
+        params: Optional[Dict[str, str]] = None,
+        kernel_name: Optional[str] = None,
+        timeout: Optional[int] = None,
+    ):
         if cls.get(node, name):
             raise ValueError(f"Run name `{name}` already exists for node `{node}`.")
+
+        inputs = inputs or {}
+        params = params or {}
 
         run = cls(name=name, node=node, inputs=inputs, params=params)
         run.run(kernel_name=kernel_name, timeout=timeout)
@@ -66,7 +77,7 @@ class Run:
     def get(cls, node, name):
         return Catalog.load().get_run(node, name)
 
-    def run(self, kernel_name: str, timeout: Optional[int]):
+    def run(self, kernel_name: Optional[str] = None, timeout: Optional[int] = None):
         os.makedirs(self.get_dir(), exist_ok=True)
         os.environ.update(
             **{
@@ -81,7 +92,21 @@ class Run:
         with open(Node.get(self.node).get_file(), encoding="utf-8") as f:
             nb = nbformat.read(f, as_version=4)
 
-        ep = ExecutePreprocessor(kernel_name=kernel_name, timeout=timeout)
+        ClearOutputPreprocessor().preprocess(nb, {})
+
+        def handle_cell_start(cell, cell_index):
+            max_length = 100
+            source = repr(cell.get("source", ""))
+            source = source[:max_length] + "..." if len(source) > max_length else source
+            print(f"Executing cell {cell_index} | {source}")
+
+        kernel_name = kernel_name or ""
+
+        ep = ExecutePreprocessor(
+            kernel_name=kernel_name,
+            timeout=timeout,
+            on_cell_start=handle_cell_start,
+        )
         ep.preprocess(nb, {"metadata": {"path": self.get_dir()}})
 
         with open(
@@ -96,22 +121,16 @@ class Run:
 @dataclass
 class Node:
     name: str
-    inputs: List[str]
-    outputs: List[str]
-    params: List[str]
 
     @classmethod
     def create(
         cls,
         name: str,
-        inputs: List[str],
-        outputs: List[str],
-        params: List[str],
     ):
         if cls.get(name):
             raise ValueError(f"Node name `{name}` already exists.")
 
-        node = cls(name=name, inputs=inputs, outputs=outputs, params=params)
+        node = cls(name=name)
         os.makedirs(os.path.dirname(node.get_file()), exist_ok=True)
         if not os.path.exists(node.get_file()):
             nb = nbformat.from_dict(
@@ -139,20 +158,10 @@ class Node:
 
     def run(
         self,
-        name: str,
-        inputs: Dict[str, InputDict],
-        params: Dict[str, str],
-        timeout: Optional[int] = None,
-        kernel_name: Optional[str] = "",
+        *args,
+        **kwargs,
     ) -> Run:
-        run = Run.create(
-            node=self.name,
-            name=name,
-            inputs=inputs,
-            params=params,
-            kernel_name=kernel_name,
-            timeout=timeout,
-        )
+        run = Run.create(self.name, *args, **kwargs)
         return run
 
     def get_file(self) -> str:
