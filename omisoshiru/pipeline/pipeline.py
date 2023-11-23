@@ -37,7 +37,7 @@ from nbconvert.preprocessors import ClearOutputPreprocessor, ExecutePreprocessor
 class InputDict(TypedDict):
     node: str
     run: str
-    data: str
+    file: str
 
 
 @dataclass
@@ -82,7 +82,7 @@ class Run:
         os.environ.update(
             **{
                 f"PIPELINE_INPUT_{k}": os.path.join(
-                    Run.get(v["node"], v["run"]).get_dir(), v["data"]
+                    Run.get(v["node"], v["run"]).get_dir(), v["file"]
                 )
                 for k, v in self.inputs.items()
             }

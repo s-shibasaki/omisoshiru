@@ -29,8 +29,8 @@ def test_create_run(temp_catalog_dir):
     node_name = "test_node"
     run_name = "test_run"
     inputs = {
-        "input1": {"node": "node1", "run": "run1", "data": "input1"},
-        "input2": {"node": "node2", "run": "run2", "data": "input2"},
+        "input1": {"node": "node1", "run": "run1", "file": "input1"},
+        "input2": {"node": "node2", "run": "run2", "file": "input2"},
     }
     params = {"param1": "value1", "param2": "value2"}
     kernel_name = "python3"
