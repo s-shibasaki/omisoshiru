@@ -90,7 +90,7 @@ class Run:
             return None
 
     @classmethod
-    def search(cls, func: Optional[Callable]) -> List["Run"]:
+    def search(cls, func: Optional[Callable] = None) -> List["Run"]:
         """
         Search for runs based on the provided filter function or expression.
 
@@ -237,7 +237,7 @@ class Node:
             return None
 
     @classmethod
-    def search(cls, func: Callable = None) -> List["Node"]:
+    def search(cls, func: Optional[Callable] = None) -> List["Node"]:
         """
         Search for nodes based on the provided filter function or expression.
 
