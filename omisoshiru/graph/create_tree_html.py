@@ -1,5 +1,5 @@
 import random
-from typing import Optional
+from typing import List, Optional
 
 import networkx as nx
 from pyvis.network import Network
@@ -15,6 +15,7 @@ def create_tree_html(
     max_depth: int = 5,
     max_nodes: int = 100,
     gravity: int = -50,
+    exclude_node_attributes: List[str] = None,
 ) -> None:
     """
     Create a tree from a multi-edge graph and output it as an HTML file.
@@ -31,6 +32,7 @@ def create_tree_html(
             The maximum number of nodes to include in the generated tree (default is 100).
         gravity (int, optional): Gravity parameter for the force-directed layout.
             Adjusting gravity can affect the layout of the tree (default is -50).
+        exclude_node_attributes (List[str], optional): List of attributes to exclude from node labels.
     Returns:
         None
     Notes:
@@ -44,6 +46,9 @@ def create_tree_html(
         # Create tree and output as HTML
         create_tree_html(G, "output_tree.html", root_node=1)
     """
+    if exclude_node_attributes is None:
+        exclude_node_attributes = []
+
     if root_node is None:
         nodes_with_edges = [node for node, degree in graph.degree() if degree > 0]
         root_node = random.choice(nodes_with_edges)
@@ -82,7 +87,12 @@ def create_tree_html(
         subgraph,
         {
             node: join_str(
-                [f"node[{node}]"] + [f"{k}: {v}" for k, v in graph.nodes[node].items()],
+                [f"node[{node}]"]
+                + [
+                    f"{k}: {v}"
+                    for k, v in graph.nodes[node].items()
+                    if not k in exclude_node_attributes
+                ],
                 "\n",
             )
             for node in subgraph.nodes()
