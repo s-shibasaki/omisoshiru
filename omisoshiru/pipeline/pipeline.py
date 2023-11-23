@@ -159,7 +159,7 @@ class Run:
             Catalog.get_catalog_dir(), "nodes", self.node, "runs", self.name
         )
 
-    def list_files(self) -> List[str]:
+    def get_files(self) -> List[str]:
         """
         Get the list of files in the run directory.
 
@@ -245,6 +245,9 @@ class Node:
             List[Node]: A list of matching Node instances.
         """
         return list(filter(func, Catalog.load().nodes))
+
+    def get_runs(self):
+        return Run.search(lambda x: x.node == self.name)
 
     def create_run(self, *args, **kwargs) -> Run:
         """
