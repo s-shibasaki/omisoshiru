@@ -123,7 +123,7 @@ class Run:
         )
         os.environ.update(**{f"PIPELINE_PARAM_{k}": v for k, v in self.params.items()})
 
-        with open(Node.get(self.node).get_file(), encoding="utf-8") as f:
+        with open(Node.get(self.node).get_path(), encoding="utf-8") as f:
             nb = nbformat.read(f, as_version=4)
 
         ClearOutputPreprocessor().preprocess(nb, {})
@@ -159,6 +159,15 @@ class Run:
             Catalog.get_catalog_dir(), "nodes", self.node, "runs", self.name
         )
 
+    def list_files(self) -> List[str]:
+        """
+        Get the list of files in the run directory.
+
+        Returns:
+            List[str]: The list of files in the run directory
+        """
+        return os.listdir(self.get_dir())
+
 
 @dataclass
 class Node:
@@ -183,8 +192,8 @@ class Node:
             raise ValueError(f"Node name `{name}` already exists.")
 
         node = cls(name=name)
-        os.makedirs(os.path.dirname(node.get_file()), exist_ok=True)
-        if not os.path.exists(node.get_file()):
+        os.makedirs(os.path.dirname(node.get_path()), exist_ok=True)
+        if not os.path.exists(node.get_path()):
             nb = nbformat.from_dict(
                 {
                     "cells": [],
@@ -193,7 +202,7 @@ class Node:
                     "nbformat_minor": 5,
                 }
             )
-            with open(node.get_file(), "w", encoding="utf-8") as f:
+            with open(node.get_path(), "w", encoding="utf-8") as f:
                 nbformat.write(nb, f)
 
         node.save()
@@ -247,7 +256,7 @@ class Node:
         run = Run.create(self.name, *args, **kwargs)
         return run
 
-    def get_file(self) -> str:
+    def get_path(self) -> str:
         """
         Get the file path for the node.
 
