@@ -1,33 +1,6 @@
-"""
-Pipeline Module
-
-This module provides a simple pipeline framework for orchestrating and executing data processing tasks using Jupyter Notebooks.
-
-Classes:
-- Run: Dataclass representing a pipeline run with methods for creation, execution, and retrieval.
-- Node: Dataclass representing a processing node in the pipeline with methods for creation, execution, and file management.
-- Catalog: Dataclass representing the catalog of nodes and runs with methods for loading, saving, and retrieval.
-
-Note: This module assumes a directory structure where nodes and runs are organized within a catalog directory.
-
-Usage:
-1. Create nodes using the Node class, specifying input, output, and parameter names.
-2. Create pipeline runs using the Run class, associating them with specific nodes, input data, and parameters.
-3. Catalog keeps track of nodes and runs, allowing retrieval and persistence.
-
-Example:
-```python
-# Create a node
-node = Node.create(name="ProcessData", inputs=["input_data.csv"], outputs=["output_data.csv"], params=["param1", "param2"])
-
-# Create a run for the node
-run = node.run(name="Run1", inputs={"input_data.csv": {"node": "Source", "run": "Run1", "data": "source_data.csv"}}, params={"param1": "value1", "param2": "value2"}, kernel_name="python3", timeout=600)
-```
-"""
-
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, TypedDict
+from typing import Callable, Dict, List, Optional, TypedDict, Union
 
 import nbformat
 from dataclass_wizard import YAMLWizard
@@ -42,6 +15,10 @@ class InputDict(TypedDict):
 
 @dataclass
 class Run:
+    """
+    Represents a run in the catalog.
+    """
+
     node: str
     name: str
     inputs: Dict[str, InputDict]
@@ -56,7 +33,21 @@ class Run:
         params: Optional[Dict[str, str]] = None,
         kernel_name: Optional[str] = None,
         timeout: Optional[int] = None,
-    ):
+    ) -> "Run":
+        """
+        Create a new run instance.
+
+        Args:
+            node (str): The name of the node.
+            name (str): The name of the run.
+            inputs (Optional[Dict[str, InputDict]]): Input information for the run.
+            params (Optional[Dict[str, str]]): Parameters for the run.
+            kernel_name (Optional[str]): The kernel name for execution.
+            timeout (Optional[int]): Timeout for execution.
+
+        Returns:
+            Run: The created Run instance.
+        """
         if cls.get(node, name):
             raise ValueError(f"Run name `{name}` already exists for node `{node}`.")
 
@@ -68,13 +59,26 @@ class Run:
         run.save()
         return run
 
-    def save(self):
+    def save(self) -> None:
+        """
+        Save the run information to the catalog.
+        """
         catalog = Catalog.load()
         catalog.runs.append(self)
         catalog.save()
 
     @classmethod
-    def get(cls, node, name):
+    def get(cls, node: str, name: str) -> Optional["Run"]:
+        """
+        Get a run instance by node and name.
+
+        Args:
+            node (str): The name of the node.
+            name (str): The name of the run.
+
+        Returns:
+            Optional[Run]: The Run instance if found, else None.
+        """
         catalog = Catalog.load()
         try:
             return next(
@@ -86,12 +90,30 @@ class Run:
             return None
 
     @classmethod
-    def search(cls, func):
+    def search(cls, func: Union[Callable, str]) -> List["Run"]:
+        """
+        Search for runs based on the provided filter function or expression.
+
+        Args:
+            func (Union[Callable, str]): A filter function or expression to match runs.
+
+        Returns:
+            List[Run]: A list of matching Run instances.
+        """
         if isinstance(func, str):
             func = lambda x: eval(func)
         return list(filter(func, Catalog.load().runs))
 
-    def run(self, kernel_name: Optional[str] = None, timeout: Optional[int] = None):
+    def run(
+        self, kernel_name: Optional[str] = None, timeout: Optional[int] = None
+    ) -> None:
+        """
+        Execute the run.
+
+        Args:
+            kernel_name (Optional[str]): The kernel name for execution.
+            timeout (Optional[int]): Timeout for execution.
+        """
         os.makedirs(self.get_dir(), exist_ok=True)
         os.environ.update(
             **{
@@ -129,18 +151,34 @@ class Run:
             nbformat.write(nb, f)
 
     def get_dir(self) -> str:
+        """
+        Get the directory path for the run.
+
+        Returns:
+            str: The directory path.
+        """
         return os.path.join(Catalog.get_catalog_dir(), "runs", self.node, self.name)
 
 
 @dataclass
 class Node:
+    """
+    Represents a node in the catalog.
+    """
+
     name: str
 
     @classmethod
-    def create(
-        cls,
-        name: str,
-    ):
+    def create(cls, name: str) -> "Node":
+        """
+        Create a new node instance.
+
+        Args:
+            name (str): The name of the node.
+
+        Returns:
+            Node: The created Node instance.
+        """
         if cls.get(name):
             raise ValueError(f"Node name `{name}` already exists.")
 
@@ -161,13 +199,25 @@ class Node:
         node.save()
         return node
 
-    def save(self):
+    def save(self) -> None:
+        """
+        Save the node information to the catalog.
+        """
         catalog = Catalog.load()
         catalog.nodes.append(self)
         catalog.save()
 
     @classmethod
-    def get(cls, name):
+    def get(cls, name: str) -> Optional["Node"]:
+        """
+        Get a node instance by name.
+
+        Args:
+            name (str): The name of the node.
+
+        Returns:
+            Optional[Node]: The Node instance if found, else None.
+        """
         catalog = Catalog.load()
         try:
             return next(filter(lambda item: item.name == name, catalog.nodes))
@@ -175,20 +225,37 @@ class Node:
             return None
 
     @classmethod
-    def search(cls, func):
+    def search(cls, func: Union[Callable, str]) -> List["Node"]:
+        """
+        Search for nodes based on the provided filter function or expression.
+
+        Args:
+            func (Union[Callable, str]): A filter function or expression to match nodes.
+
+        Returns:
+            List[Node]: A list of matching Node instances.
+        """
         if isinstance(func, str):
             func = lambda x: eval(func)
         return list(filter(func, Catalog.load().nodes))
 
-    def create_run(
-        self,
-        *args,
-        **kwargs,
-    ) -> Run:
+    def create_run(self, *args, **kwargs) -> Run:
+        """
+        Create a run associated with this node.
+
+        Returns:
+            Run: The created Run instance.
+        """
         run = Run.create(self.name, *args, **kwargs)
         return run
 
     def get_file(self) -> str:
+        """
+        Get the file path for the node.
+
+        Returns:
+            str: The file path.
+        """
         return os.path.join(
             Catalog.get_catalog_dir(), "nodes", self.name, f"{self.name}.ipynb"
         )
@@ -196,22 +263,47 @@ class Node:
 
 @dataclass
 class Catalog(YAMLWizard):
-    CATALOG_DIR = os.getcwd()
-    CATALOG_NAME = "catalog.yml"
+    """
+    Represents the catalog containing nodes and runs.
+    """
+
+    CATALOG_DIR: str = os.getcwd()
+    CATALOG_NAME: str = "catalog.yml"
 
     nodes: List[Node]
     runs: List[Run]
 
     @classmethod
-    def set_catalog_dir(cls, catalog_dir=None):
+    def set_catalog_dir(cls, catalog_dir: Optional[str] = None) -> None:
+        """
+        Set the catalog directory.
+
+        Args:
+            catalog_dir (Optional[str]): The directory path.
+
+        Returns:
+            None
+        """
         cls.CATALOG_DIR = catalog_dir or os.getcwd()
 
     @classmethod
     def get_catalog_dir(cls) -> str:
+        """
+        Get the catalog directory.
+
+        Returns:
+            str: The directory path.
+        """
         return cls.CATALOG_DIR
 
     @classmethod
-    def load(cls):
+    def load(cls) -> "Catalog":
+        """
+        Load the catalog from the YAML file.
+
+        Returns:
+            Catalog: The loaded Catalog instance.
+        """
         if not os.path.exists(os.path.join(cls.CATALOG_DIR, cls.CATALOG_NAME)):
             catalog = Catalog(nodes=[], runs=[])
             return catalog
@@ -221,5 +313,8 @@ class Catalog(YAMLWizard):
             )
             return catalog
 
-    def save(self):
+    def save(self) -> None:
+        """
+        Save the catalog to the YAML file.
+        """
         self.to_yaml_file(os.path.join(self.CATALOG_DIR, self.CATALOG_NAME))
