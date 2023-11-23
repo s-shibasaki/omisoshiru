@@ -90,18 +90,16 @@ class Run:
             return None
 
     @classmethod
-    def search(cls, func: Union[Callable, str]) -> List["Run"]:
+    def search(cls, func: Callable) -> List["Run"]:
         """
         Search for runs based on the provided filter function or expression.
 
         Args:
-            func (Union[Callable, str]): A filter function or expression to match runs.
+            func (Callable): A filter function or expression to match runs.
 
         Returns:
             List[Run]: A list of matching Run instances.
         """
-        if isinstance(func, str):
-            func = lambda x: eval(func)
         return list(filter(func, Catalog.load().runs))
 
     def run(
@@ -225,18 +223,16 @@ class Node:
             return None
 
     @classmethod
-    def search(cls, func: Union[Callable, str]) -> List["Node"]:
+    def search(cls, func: Callable) -> List["Node"]:
         """
         Search for nodes based on the provided filter function or expression.
 
         Args:
-            func (Union[Callable, str]): A filter function or expression to match nodes.
+            func (Callable): A filter function or expression to match nodes.
 
         Returns:
             List[Node]: A list of matching Node instances.
         """
-        if isinstance(func, str):
-            func = lambda x: eval(func)
         return list(filter(func, Catalog.load().nodes))
 
     def create_run(self, *args, **kwargs) -> Run:
