@@ -86,8 +86,10 @@ class Run:
             return None
 
     @classmethod
-    def search(cls, formula):
-        return list(filter(lambda x: eval(formula), Catalog.load().runs))
+    def search(cls, func):
+        if isinstance(func, str):
+            func = lambda x: eval(func)
+        return list(filter(func, Catalog.load().runs))
 
     def run(self, kernel_name: Optional[str] = None, timeout: Optional[int] = None):
         os.makedirs(self.get_dir(), exist_ok=True)
@@ -173,8 +175,10 @@ class Node:
             return None
 
     @classmethod
-    def search(cls, formula):
-        return list(filter(lambda x: eval(formula), Catalog.load().nodes))
+    def search(cls, func):
+        if isinstance(func, str):
+            func = lambda x: eval(func)
+        return list(filter(func, Catalog.load().nodes))
 
     def create_run(
         self,
