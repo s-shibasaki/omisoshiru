@@ -75,7 +75,19 @@ class Run:
 
     @classmethod
     def get(cls, node, name):
-        return Catalog.load().get_run(node, name)
+        catalog = Catalog.load()
+        try:
+            return next(
+                filter(
+                    lambda item: item.node == node and item.name == name, catalog.runs
+                )
+            )
+        except StopIteration:
+            return None
+
+    @classmethod
+    def search(cls, formula):
+        return list(filter(lambda x: eval(formula), Catalog.load().runs))
 
     def run(self, kernel_name: Optional[str] = None, timeout: Optional[int] = None):
         os.makedirs(self.get_dir(), exist_ok=True)
@@ -154,9 +166,17 @@ class Node:
 
     @classmethod
     def get(cls, name):
-        return Catalog.load().get_node(name)
+        catalog = Catalog.load()
+        try:
+            return next(filter(lambda item: item.name == name, catalog.nodes))
+        except StopIteration:
+            return None
 
-    def run(
+    @classmethod
+    def search(cls, formula):
+        return list(filter(lambda x: eval(formula), Catalog.load().nodes))
+
+    def create_run(
         self,
         *args,
         **kwargs,
@@ -199,17 +219,3 @@ class Catalog(YAMLWizard):
 
     def save(self):
         self.to_yaml_file(os.path.join(self.CATALOG_DIR, self.CATALOG_NAME))
-
-    def get_node(self, name):
-        try:
-            return next(filter(lambda item: item.name == name, self.nodes))
-        except StopIteration:
-            return None
-
-    def get_run(self, node, name):
-        try:
-            return next(
-                filter(lambda item: item.node == node and item.name == name, self.runs)
-            )
-        except StopIteration:
-            return None

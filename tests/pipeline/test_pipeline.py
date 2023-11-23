@@ -23,8 +23,8 @@ def test_create_node(temp_catalog_dir):
 
 
 def test_create_run(temp_catalog_dir):
-    Node.create("node1").run("run1")
-    Node.create("node2").run("run2")
+    Node.create("node1").create_run("run1")
+    Node.create("node2").create_run("run2")
 
     node_name = "test_node"
     run_name = "test_run"
@@ -37,23 +37,7 @@ def test_create_run(temp_catalog_dir):
     timeout = 600
 
     node = Node.create(node_name)
-    run = node.run(run_name, inputs, params, kernel_name, timeout)
+    run = node.create_run(run_name, inputs, params, kernel_name, timeout)
 
     assert os.path.exists(run.get_dir())
     assert Run.get(node_name, run_name) == run
-
-
-def test_catalog_load_save(temp_catalog_dir):
-    catalog = Catalog.load()
-
-    assert catalog.nodes == []
-    assert catalog.runs == []
-
-    # Modify catalog and save
-    node = Node.create("test_node")
-    run = node.run("test_run")
-
-    # Load catalog and check if modifications are applied
-    new_catalog = Catalog.load()
-    assert new_catalog.get_node("test_node") == node
-    assert new_catalog.get_run("test_node", "test_run") == run
