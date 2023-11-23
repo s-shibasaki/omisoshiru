@@ -157,7 +157,9 @@ class Run:
         Returns:
             str: The directory path.
         """
-        return os.path.join(Catalog.get_catalog_dir(), "runs", self.node, self.name)
+        return os.path.join(
+            Catalog.get_catalog_dir(), "nodes", self.node, "runs", self.name
+        )
 
 
 @dataclass

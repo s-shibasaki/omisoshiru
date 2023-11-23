@@ -11,7 +11,6 @@ from .tfidf_cosine_similarity import tfidf_cosine_similarity
 from .unify_hz import unify_hz
 
 __all__ = [
-    "wakachi",
     "FuzzyReplacer",
     "join_str",
     "replace_text_ranges",
