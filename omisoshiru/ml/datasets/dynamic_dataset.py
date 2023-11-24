@@ -14,4 +14,5 @@ class DynamicDataset(IterableDataset):
 
     def __iter__(self):
         self.epoch += 1
-        return self.epoch_processor(self.epoch, self.data)
+        epoch_iterable = self.epoch_processor(self.epoch, self.data)
+        return iter(epoch_iterable)
