@@ -19,7 +19,6 @@ class MultiSentencePairClassifier(nn.Module):
         self._multi_sentence_sum = MultiSentenceSum(pretrained_model_name)
         self._classifier = nn.Linear(self._multi_sentence_sum.hidden_size * 2, 1)
         self._dropout = nn.Dropout(0.1)
-        self._sigmoid = nn.Sigmoid()
 
     def forward(
         self,
@@ -32,5 +31,5 @@ class MultiSentencePairClassifier(nn.Module):
         sum_b = self._multi_sentence_sum(sentences_b, weights_b)
         concatenated = torch.cat((sum_a, sum_b), dim=1)
         logits = self._classifier(self._dropout(concatenated))
-        output = self._sigmoid(logits).squeeze(1)
+        output = logits.squeeze(1)
         return output

@@ -6,6 +6,12 @@ from transformers import AutoModel, AutoTokenizer
 
 
 class MultiSentenceSum(nn.Module):
+    TOKENIZATION_OPTIONS = {
+        "return_tensors": "pt",
+        "padding": True,
+        "truncation": True,
+    }
+
     def __init__(self, pretrained_model_name):
         """
         Initializes an instance of the MultiSentenceSum model.
@@ -16,11 +22,6 @@ class MultiSentenceSum(nn.Module):
         super().__init__()
         self._model = AutoModel.from_pretrained(pretrained_model_name)
         self._tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
-        self._tokenization_options = {
-            "return_tensors": "pt",
-            "padding": True,
-            "truncation": True,
-        }
         self.hidden_size = self._model.config.hidden_size
 
     def forward(self, sentences: List[List[str]], weights: torch.Tensor):
@@ -41,7 +42,7 @@ class MultiSentenceSum(nn.Module):
         output_pool = []
         for sentence in zip(*sentences):
             # Tokenize the input sentences
-            inputs = self._tokenizer(sentence, **self._tokenization_options).to(
+            inputs = self._tokenizer(sentence, **self.TOKENIZATION_OPTIONS).to(
                 next(self._model.parameters()).device
             )
 
