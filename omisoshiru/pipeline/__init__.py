@@ -5,6 +5,7 @@ This module provides a simple pipeline framework for orchestrating and executing
 """
 
 
+from .helpers import NotebookHelper
 from .pipeline import Catalog, InputDict, Node, Run
 
-__all__ = ["Node", "Run", "Catalog", "InputDict"]
+__all__ = ["Node", "Run", "Catalog", "InputDict", "NotebookHelper"]

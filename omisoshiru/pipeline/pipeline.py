@@ -118,13 +118,15 @@ class Run:
         os.makedirs(self.get_dir(), exist_ok=True)
         os.environ.update(
             **{
-                f"PIPELINE_INPUT_{k}": os.path.join(
+                f"PIPELINE_INPUT_{k.upper()}": os.path.join(
                     Run.get(v["node"], v["run"]).get_dir(), v["file"]
                 )
                 for k, v in self.inputs.items()
             }
         )
-        os.environ.update(**{f"PIPELINE_PARAM_{k}": v for k, v in self.params.items()})
+        os.environ.update(
+            **{f"PIPELINE_PARAM_{k.upper()}": v for k, v in self.params.items()}
+        )
 
         with open(Node.get(self.node).get_path(), encoding="utf-8") as f:
             nb = nbformat.read(f, as_version=4)
