@@ -13,5 +13,5 @@ def convert_dict_of_lists_to_list_of_dicts(dict_of_lists):
         A list of dictionaries with the same keys as the input dictionary, where the values are taken from the corresponding list in the input dictionary.
     """
     keys, values = zip(*dict_of_lists.items())
-    list_of_dicts = [{k: v for k, v in zip(keys, item)} for item in list(zip(*values))]
+    list_of_dicts = [{k: v for k, v in zip(keys, item)} for item in zip(*values)]
     return list_of_dicts
