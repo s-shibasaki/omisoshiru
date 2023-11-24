@@ -90,17 +90,20 @@ class Run:
             return None
 
     @classmethod
-    def search(cls, func: Callable) -> List["Run"]:
+    def search(cls, func: Optional[Callable] = None) -> List["Run"]:
         """
         Search for runs based on the provided filter function or expression.
 
         Args:
-            func (Callable): A filter function or expression to match runs.
+            func (Optional[Callable]): A filter function or expression to match runs.
 
         Returns:
             List[Run]: A list of matching Run instances.
         """
-        return list(filter(func, Catalog.load().runs))
+        runs = Catalog.load().runs
+        if func is not None:
+            runs = list(filter(func, runs))
+        return runs
 
     def run(
         self, kernel_name: Optional[str] = None, timeout: Optional[int] = None
@@ -159,7 +162,7 @@ class Run:
             Catalog.get_catalog_dir(), "nodes", self.node, "runs", self.name
         )
 
-    def list_files(self) -> List[str]:
+    def get_files(self) -> List[str]:
         """
         Get the list of files in the run directory.
 
@@ -234,17 +237,29 @@ class Node:
             return None
 
     @classmethod
-    def search(cls, func: Callable) -> List["Node"]:
+    def search(cls, func: Optional[Callable] = None) -> List["Node"]:
         """
         Search for nodes based on the provided filter function or expression.
 
         Args:
-            func (Callable): A filter function or expression to match nodes.
+            func (Optional[Callable]): A filter function or expression to match nodes.
 
         Returns:
             List[Node]: A list of matching Node instances.
         """
-        return list(filter(func, Catalog.load().nodes))
+        nodes = Catalog.load().nodes
+        if func is not None:
+            nodes = list(filter(func, nodes))
+        return nodes
+
+    def get_runs(self):
+        """
+        Get exist runs associated with this node.
+
+        Returns:
+            List[Run]: runs associated with this node.
+        """
+        return Run.search(lambda x: x.node == self.name)
 
     def create_run(self, *args, **kwargs) -> Run:
         """
