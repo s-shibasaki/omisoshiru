@@ -10,15 +10,8 @@ class DynamicDataset(IterableDataset):
 
         self.data = data
         self.epoch_processor = epoch_processor
-        self.epoch = 0
+        self.epoch = -1
 
     def __iter__(self):
-        self.epoch_iterable = self.epoch_processor(self.epoch, self.data)
-        return self
-
-    def __next__(self):
-        try:
-            return next(self.epoch_iterable)
-        except StopIteration:
-            self.epoch += 1
-            raise StopIteration
+        self.epoch += 1
+        return self.epoch_processor(self.epoch, self.data)
