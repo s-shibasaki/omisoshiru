@@ -1,8 +1,7 @@
 import os
 import warnings
-from typing import List, Optional, Tuple
 
-from .pipeline import Catalog, Node, Run
+from .pipeline import Node, Run, set_catalog_dir
 
 
 class NotebookHelper:
@@ -35,7 +34,7 @@ class NotebookHelper:
         remaining, typ = os.path.split(remaining)
         if typ == "nodes":
             self._node = name
-            Catalog.set_catalog_dir(remaining)
+            set_catalog_dir(remaining)
         elif typ == "runs":
             self._run = name
             self._set_attribute(remaining)

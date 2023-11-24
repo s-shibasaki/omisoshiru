@@ -3,8 +3,37 @@ from dataclasses import dataclass
 from typing import Callable, ClassVar, Dict, List, Optional, TypedDict, Union
 
 import nbformat
+import networkx as nx
 from dataclass_wizard import YAMLWizard
+from IPython.display import Image
 from nbconvert.preprocessors import ClearOutputPreprocessor, ExecutePreprocessor
+
+CATALOG_DIR = os.getcwd()
+CATALOG_NAME = "catalog.yml"
+
+
+def set_catalog_dir(catalog_dir: Optional[str] = None) -> None:
+    """
+    Set the catalog directory.
+
+    Args:
+        catalog_dir (Optional[str]): The directory path.
+
+    Returns:
+        None
+    """
+    global CATALOG_DIR
+    CATALOG_DIR = catalog_dir or os.getcwd()
+
+
+def get_catalog_dir() -> str:
+    """
+    Get the catalog directory.
+
+    Returns:
+        str: The directory path.
+    """
+    return CATALOG_DIR
 
 
 class InputDict(TypedDict):
@@ -63,9 +92,9 @@ class Run:
         """
         Save the run information to the catalog.
         """
-        catalog = Catalog.load()
-        catalog.runs.append(self)
-        catalog.save()
+        pipeline = Pipeline.from_catalog()
+        pipeline.runs.append(self)
+        pipeline.to_catalog()
 
     @classmethod
     def get(cls, node: str, name: str) -> Optional["Run"]:
@@ -79,11 +108,11 @@ class Run:
         Returns:
             Optional[Run]: The Run instance if found, else None.
         """
-        catalog = Catalog.load()
+        pipeline = Pipeline.from_catalog()
         try:
             return next(
                 filter(
-                    lambda item: item.node == node and item.name == name, catalog.runs
+                    lambda item: item.node == node and item.name == name, pipeline.runs
                 )
             )
         except StopIteration:
@@ -100,7 +129,7 @@ class Run:
         Returns:
             List[Run]: A list of matching Run instances.
         """
-        runs = Catalog.load().runs
+        runs = Pipeline.from_catalog().runs
         if func is not None:
             runs = list(filter(func, runs))
         return runs
@@ -160,9 +189,7 @@ class Run:
         Returns:
             str: The directory path.
         """
-        return os.path.join(
-            Catalog.get_catalog_dir(), "nodes", self.node, "runs", self.name
-        )
+        return os.path.join(CATALOG_DIR, "nodes", self.node, "runs", self.name)
 
     def get_files(self) -> List[str]:
         """
@@ -217,9 +244,9 @@ class Node:
         """
         Save the node information to the catalog.
         """
-        catalog = Catalog.load()
-        catalog.nodes.append(self)
-        catalog.save()
+        pipeline = Pipeline.from_catalog()
+        pipeline.nodes.append(self)
+        pipeline.to_catalog()
 
     @classmethod
     def get(cls, name: str) -> Optional["Node"]:
@@ -232,9 +259,9 @@ class Node:
         Returns:
             Optional[Node]: The Node instance if found, else None.
         """
-        catalog = Catalog.load()
+        pipeline = Pipeline.from_catalog()
         try:
-            return next(filter(lambda item: item.name == name, catalog.nodes))
+            return next(filter(lambda item: item.name == name, pipeline.nodes))
         except StopIteration:
             return None
 
@@ -249,7 +276,7 @@ class Node:
         Returns:
             List[Node]: A list of matching Node instances.
         """
-        nodes = Catalog.load().nodes
+        nodes = Pipeline.from_catalog().nodes
         if func is not None:
             nodes = list(filter(func, nodes))
         return nodes
@@ -280,65 +307,46 @@ class Node:
         Returns:
             str: The file path.
         """
-        return os.path.join(
-            Catalog.get_catalog_dir(), "nodes", self.name, f"{self.name}.ipynb"
-        )
+        return os.path.join(CATALOG_DIR, "nodes", self.name, f"{self.name}.ipynb")
 
 
 @dataclass
-class Catalog(YAMLWizard):
+class Pipeline(YAMLWizard):
     """
     Represents the catalog containing nodes and runs.
     """
-
-    CATALOG_DIR: ClassVar[str] = os.getcwd()
-    CATALOG_NAME: ClassVar[str] = "catalog.yml"
 
     nodes: List[Node]
     runs: List[Run]
 
     @classmethod
-    def set_catalog_dir(cls, catalog_dir: Optional[str] = None) -> None:
-        """
-        Set the catalog directory.
-
-        Args:
-            catalog_dir (Optional[str]): The directory path.
-
-        Returns:
-            None
-        """
-        cls.CATALOG_DIR = catalog_dir or os.getcwd()
-
-    @classmethod
-    def get_catalog_dir(cls) -> str:
-        """
-        Get the catalog directory.
-
-        Returns:
-            str: The directory path.
-        """
-        return cls.CATALOG_DIR
-
-    @classmethod
-    def load(cls) -> "Catalog":
+    def from_catalog(cls) -> "Pipeline":
         """
         Load the catalog from the YAML file.
 
         Returns:
             Catalog: The loaded Catalog instance.
         """
-        if not os.path.exists(os.path.join(cls.CATALOG_DIR, cls.CATALOG_NAME)):
-            catalog = Catalog(nodes=[], runs=[])
-            return catalog
+        if not os.path.exists(os.path.join(CATALOG_DIR, CATALOG_NAME)):
+            pipeline = cls(nodes=[], runs=[])
+            return pipeline
         else:
-            catalog = cls.from_yaml_file(
-                os.path.join(cls.CATALOG_DIR, cls.CATALOG_NAME)
-            )
-            return catalog
+            pipeline = cls.from_yaml_file(os.path.join(CATALOG_DIR, CATALOG_NAME))
+            return pipeline
 
-    def save(self) -> None:
+    def to_catalog(self) -> None:
         """
         Save the catalog to the YAML file.
         """
-        self.to_yaml_file(os.path.join(self.CATALOG_DIR, self.CATALOG_NAME))
+        self.to_yaml_file(os.path.join(CATALOG_DIR, CATALOG_NAME))
+
+    def plot_graph(self):
+        G = nx.DiGraph()
+        for run in self.runs:
+            for input_name, input_dict in run.inputs.items():
+                G.add_edge(
+                    f"{input_dict['node']}\n{input_dict['run']}",
+                    f"{run.node}\n{run.name}",
+                    label=f"{input_dict['file']} -> {input_name}",
+                )
+        Image(nx.drawing.nx_pydot.to_pydot(G).create_png())

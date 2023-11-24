@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 
-from omisoshiru.pipeline import Catalog, Node, Run
+from omisoshiru.pipeline import Node, Pipeline, Run, set_catalog_dir
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def temp_catalog_dir(request):
 
 
 def test_create_node(temp_catalog_dir):
-    Catalog.set_catalog_dir(temp_catalog_dir)
+    set_catalog_dir(temp_catalog_dir)
 
     # Create a node
     node_name = "test_node"
@@ -30,7 +30,7 @@ def test_create_node(temp_catalog_dir):
 
 
 def test_create_run(temp_catalog_dir):
-    Catalog.set_catalog_dir(temp_catalog_dir)
+    set_catalog_dir(temp_catalog_dir)
 
     # Create a node
     node_name = "test_node"
