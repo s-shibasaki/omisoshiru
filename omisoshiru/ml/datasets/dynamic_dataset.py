@@ -37,19 +37,24 @@ class DynamicDataset(IterableDataset):
     - PyTorch IterableDataset: https://pytorch.org/docs/stable/data.html#torch.utils.data.IterableDataset
     """
 
-    def __init__(self, data, initialize_function=None):
-        if initialize_function is None:
-            initialize_function = lambda x: x
-        elif not callable(initialize_function):
-            raise TypeError("initialize_function must be callable")
+    def __init__(self, data, on_epoch_start=None):
+        if on_epoch_start is None:
+            on_epoch_start = lambda x: x
+        elif not callable(on_epoch_start):
+            raise TypeError("on_epoch_start must be callable")
 
         self.data = data
-        self.initialize_function = initialize_function
+        self.on_epoch_start = on_epoch_start
+        self.epoch = 0
 
     def __iter__(self):
-        epoch_data = self.initialize_function(self.data)
+        epoch_data = self.on_epoch_start(self.epoch, self.data)
         self.epoch_iterator = iter(epoch_data)
         return self
 
     def __next__(self):
-        return next(self.epoch_iterator)
+        try:
+            return next(self.epoch_iterator)
+        except StopIteration:
+            self.epoch += 1
+            raise StopIteration
