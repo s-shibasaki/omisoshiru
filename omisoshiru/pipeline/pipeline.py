@@ -349,4 +349,4 @@ class Pipeline(YAMLWizard):
                     f"{run.node}\n{run.name}",
                     label=f"{input_dict['file']} -> {input_name}",
                 )
-        Image(nx.drawing.nx_pydot.to_pydot(G).create_png())
+        return Image(nx.drawing.nx_pydot.to_pydot(G).create_png())
