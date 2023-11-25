@@ -18,7 +18,6 @@ def convert_list_of_dicts_to_dict_of_lists(
     elif stack == "numpy":
         dict_of_lists = {k: np.stack(v) for k, v in dict_of_lists.items()}
     elif stack == "torch":
-        print("STACKING")
         dict_of_lists = {k: torch.stack(v) for k, v in dict_of_lists.items()}
 
     return dict_of_lists
