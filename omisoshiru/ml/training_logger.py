@@ -21,11 +21,17 @@ class TrainingLogger:
     def epoch_done(self, **kwargs):
         train_losses = map(
             lambda x: x["train_loss"],
-            filter(self.train_step_log, lambda x: x["epoch"] == self.epoch),
+            filter(
+                lambda x: x["epoch"] == self.epoch,
+                self.train_step_log,
+            ),
         )
         eval_losses = map(
             lambda x: x["eval_loss"],
-            filter(self.eval_step_log, lambda x: x["epoch"] == self.epoch),
+            filter(
+                lambda x: x["epoch"] == self.epoch,
+                self.eval_step_log,
+            ),
         )
         epoch_result = {
             "epoch": self.epoch,
