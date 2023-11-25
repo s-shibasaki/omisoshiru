@@ -365,13 +365,13 @@ class Pipeline(YAMLWizard):
                 if not input_dict["run"] in edge_labels[input_dict["node"]]:
                     edge_labels[input_dict["node"]][input_dict["run"]] = []
                 edge_labels[input_dict["node"]][input_dict["run"]].append(
-                    f'"{input_dict["file"]} -> {input_name}"'
+                    f'{input_dict["file"]} -> {input_name}'
                 )
             for src_node, run_dict in edge_labels.items():
                 for src_run, labels in run_dict.items():
                     G.add_edge(
                         format_run_label(Run.get(src_node, src_run)),
                         format_run_label(run),
-                        label=join_str(labels, "\n"),
+                        label='"{}"'.format(join_str(labels, "\n")),
                     )
         return Image(nx.drawing.nx_pydot.to_pydot(G).create_png())
