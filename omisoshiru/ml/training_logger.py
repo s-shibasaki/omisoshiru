@@ -51,6 +51,7 @@ class TrainingLogger(YAMLWizard):
         }
         print(", ".join([f"{k}: {v}" for k, v in epoch_result.items()]))
         self.epoch_log.append(epoch_result)
+        df = pd.DataFrame(self.epoch_log).to_json("epoch_log.json", orient="index")
         return epoch_result
 
     def epoch_plot(self, variables=None, log=False):
