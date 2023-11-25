@@ -60,7 +60,7 @@ class Run:
         cls,
         node: str,
         name: str,
-        inputs: Optional[Dict[str, InputDict]] = None,
+        inputs: Optional[Dict[str, Union[InputDict, str]]] = None,
         params: Optional[Dict[str, str]] = None,
         kernel_name: Optional[str] = None,
         timeout: Optional[int] = None,
@@ -84,6 +84,12 @@ class Run:
 
         inputs = inputs or {}
         params = params or {}
+
+        for k, v in inputs.items():
+            if isinstance(v, str):
+                inputs[k] = InputDict(
+                    **{k_: v_ for k_, v_ in zip(["node", "run", "file"], v.split(":"))}
+                )
 
         run = cls(name=name, node=node, inputs=inputs, params=params)
         run.run(kernel_name=kernel_name, timeout=timeout)
@@ -374,4 +380,8 @@ class Pipeline(YAMLWizard):
                         format_run_label(run),
                         label='"{}"'.format(join_str(labels, "\n")),
                     )
-        return Image(nx.drawing.nx_pydot.to_pydot(G).create_png())
+
+        path = os.path.join(CATALOG_DIR, "pipeline.png")
+        with open(path, "wb") as f:
+            f.write(nx.drawing.nx_pydot.to_pydot(G).create_png())
+        print(path)
