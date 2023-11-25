@@ -3,6 +3,8 @@ from typing import Optional
 import MeCab
 import unidic_lite
 
+# TODO: MeCab.Taggerのインスタンスをグローバル変数で保持する
+
 
 class Wakachi:
     def __init__(self, allow_whitespace: Optional[bool] = None):

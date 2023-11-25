@@ -8,6 +8,8 @@ from dataclass_wizard import YAMLWizard
 from IPython.display import Image
 from nbconvert.preprocessors import ClearOutputPreprocessor, ExecutePreprocessor
 
+from ..text import insert_newlines, join_str
+
 CATALOG_DIR = os.getcwd()
 CATALOG_NAME = "catalog.yml"
 
@@ -342,11 +344,34 @@ class Pipeline(YAMLWizard):
 
     def plot_graph(self):
         G = nx.DiGraph()
+
+        def format_run_label(run):
+            lines = [
+                f"Node: {run.node}",
+                f"Run: {run.name}",
+            ] + [
+                f"Param {k}: {v.encode('unicode_escape')}"
+                for k, v in run.params.items()
+            ]
+            label = join_str([insert_newlines(line, 50) for line in lines], "\n")
+            return f'"{label}"'
+
         for run in self.runs:
+            G.add_node(format_run_label(run))
+            edge_labels = {}
             for input_name, input_dict in run.inputs.items():
-                G.add_edge(
-                    f"{input_dict['node']}\n{input_dict['run']}",
-                    f"{run.node}\n{run.name}",
-                    label=f"{input_dict['file']} -> {input_name}",
+                if not input_dict["node"] in edge_labels:
+                    edge_labels[input_dict["node"]] = {}
+                if not input_dict["run"] in edge_labels[input_dict["node"]]:
+                    edge_labels[input_dict["node"]][input_dict["run"]] = []
+                edge_labels[input_dict["node"]][input_dict["run"]].append(
+                    f'"{input_dict["file"]} -> {input_name}"'
                 )
+            for src_node, run_dict in edge_labels.items():
+                for src_run, labels in run_dict.items():
+                    G.add_edge(
+                        format_run_label(Run.get(src_node, src_run)),
+                        format_run_label(run),
+                        label=join_str(labels, "\n"),
+                    )
         return Image(nx.drawing.nx_pydot.to_pydot(G).create_png())

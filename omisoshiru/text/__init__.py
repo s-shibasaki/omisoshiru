@@ -5,6 +5,7 @@ Text processing utilities for various tasks, including Japanese text processing,
 
 from . import wakachi
 from .fuzzy_replacer import FuzzyReplacer
+from .insert_newlines import insert_newlines
 from .join_str import join_str
 from .replace_text_ranges import replace_text_ranges
 from .tfidf_cosine_similarity import tfidf_cosine_similarity
@@ -16,4 +17,5 @@ __all__ = [
     "replace_text_ranges",
     "unify_hz",
     "tfidf_cosine_similarity",
+    "insert_newlines",
 ]
