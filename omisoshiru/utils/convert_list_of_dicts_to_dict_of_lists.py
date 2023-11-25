@@ -12,12 +12,13 @@ def convert_list_of_dicts_to_dict_of_lists(
 
     if isinstance(nest, int) and nest > 1:
         dict_of_lists = {
-            k: convert_list_of_dicts_to_dict_of_lists(v, nest - 1)
+            k: convert_list_of_dicts_to_dict_of_lists(v, nest - 1, stack)
             for k, v in dict_of_lists.items()
         }
     elif stack == "numpy":
         dict_of_lists = {k: np.stack(v) for k, v in dict_of_lists.items()}
     elif stack == "torch":
+        print("STACKING")
         dict_of_lists = {k: torch.stack(v) for k, v in dict_of_lists.items()}
 
     return dict_of_lists
