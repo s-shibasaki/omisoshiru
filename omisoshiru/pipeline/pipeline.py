@@ -257,7 +257,7 @@ class Run:
         path = os.path.join(CATALOG_DIR, "pipeline.png")
         with open(path, "wb") as f:
             f.write(png)
-        print(f"Graph saved to {path}.")
+        print(f"Graph saved to {path}")
         return Image(png)
 
 
