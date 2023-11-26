@@ -27,7 +27,7 @@ class WakachiReplacer:
             >>> print(result)
             "フルーツとフルーツが好きです。"
         """
-        self.__matcher = WakachiMatcher(unify_hz=unify_hz, unify_hl=unify_hl)
+        self._matcher = WakachiMatcher(unify_hz=unify_hz, unify_hl=unify_hl)
         self.replace_dict = replace_dict
 
     def replace(self, text: str) -> str:
@@ -40,7 +40,7 @@ class WakachiReplacer:
         Returns:
             str: The text with replacements applied.
         """
-        matches = self.__matcher.match(list(self.replace_dict.keys()), text)
+        matches = self._matcher.match(list(self.replace_dict.keys()), text)
         text = replace_text_ranges(
             text, [(m_pos, self.replace_dict[m_pat]) for m_pos, m_pat in matches]
         )
