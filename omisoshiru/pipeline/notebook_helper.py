@@ -49,6 +49,10 @@ class NotebookHelper:
         name = name.lower()
         value = self._inputs.get(name)
         if value is None:
+            if self._run is not None:
+                raise RuntimeError(
+                    f"Input `{name}` not found in environment variables."
+                )
             warnings.warn(
                 f"Input `{name}` not found in environment variables. Using default value: {default_value}"
             )
@@ -59,6 +63,10 @@ class NotebookHelper:
         name = name.lower()
         value = self._params.get(name)
         if value is None:
+            if self._run is not None:
+                raise RuntimeError(
+                    f"Param `{name}` not found in environment variables."
+                )
             warnings.warn(
                 f"Param `{name}` not found in environment variables. Using default value: {default_value}"
             )

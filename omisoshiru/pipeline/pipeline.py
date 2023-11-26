@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import Callable, ClassVar, Dict, List, Optional, TypedDict, Union
+from typing import Callable, Dict, List, Optional, TypedDict, Union
 
 import nbformat
 import networkx as nx
@@ -54,6 +54,7 @@ class Run:
     name: str
     inputs: Dict[str, InputDict]
     params: Dict[str, str]
+    success: bool
 
     @classmethod
     def create(
@@ -64,6 +65,7 @@ class Run:
         params: Optional[Dict[str, str]] = None,
         kernel_name: Optional[str] = None,
         timeout: Optional[int] = None,
+        success: bool = False,
     ) -> "Run":
         """
         Create a new run instance.
@@ -79,8 +81,10 @@ class Run:
         Returns:
             Run: The created Run instance.
         """
-        if cls.get(node, name):
+        exist = cls.get(node, name)
+        if exist and exist.success:
             raise ValueError(f"Run name `{name}` already exists for node `{node}`.")
+        run = cls(name=name, node=node, inputs=inputs, params=params, success=success)
 
         inputs = inputs or {}
         params = params or {}
@@ -91,7 +95,6 @@ class Run:
                     **{k_: v_ for k_, v_ in zip(["node", "run", "file"], v.split(":"))}
                 )
 
-        run = cls(name=name, node=node, inputs=inputs, params=params)
         run.run(kernel_name=kernel_name, timeout=timeout)
         run.save()
         return run
@@ -183,7 +186,13 @@ class Run:
             timeout=timeout,
             on_cell_start=handle_cell_start,
         )
-        ep.preprocess(nb, {"metadata": {"path": self.get_dir()}})
+        try:
+            ep.preprocess(nb, {"metadata": {"path": self.get_dir()}})
+            self.success = True
+            print(f"Run `{self.name}` executed successfully.")
+        except Exception as e:
+            self.success = False
+            print(f"Run `{self.name}` failed with the following error:\n{e}")
 
         with open(
             os.path.join(self.get_dir(), f"{self.name}.ipynb"), "w", encoding="utf-8"
@@ -207,6 +216,52 @@ class Run:
             List[str]: The list of files in the run directory
         """
         return os.listdir(self.get_dir())
+
+    @classmethod
+    def search_plot(cls, func: Optional[Callable] = None):
+        G = nx.DiGraph()
+
+        def format_run_label(run):
+            lines = (
+                [
+                    f"Node: {run.node}",
+                    f"Run: {run.name}",
+                ]
+                + [
+                    f"Param {k}: {v.encode('unicode_escape')}"
+                    for k, v in run.params.items()
+                ]
+                + [
+                    f"Success: {run.success}",
+                ]
+            )
+            label = join_str([insert_newlines(line, 50) for line in lines], "\n")
+            return f'"{label}"'
+
+        for run in cls.search(func=func):
+            G.add_node(format_run_label(run))
+            edge_labels = {}
+            for input_name, input_dict in run.inputs.items():
+                if not input_dict["node"] in edge_labels:
+                    edge_labels[input_dict["node"]] = {}
+                if not input_dict["run"] in edge_labels[input_dict["node"]]:
+                    edge_labels[input_dict["node"]][input_dict["run"]] = []
+                edge_labels[input_dict["node"]][input_dict["run"]].append(
+                    f'{input_dict["file"]} -> {input_name}'
+                )
+            for src_node, run_dict in edge_labels.items():
+                for src_run, labels in run_dict.items():
+                    G.add_edge(
+                        format_run_label(Run.get(src_node, src_run)),
+                        format_run_label(run),
+                        label='"{}"'.format(join_str(labels, "\n")),
+                    )
+        png = nx.drawing.nx_pydot.to_pydot(G).create_png()
+        path = os.path.join(CATALOG_DIR, "pipeline.png")
+        with open(path, "wb") as f:
+            f.write(png)
+        print(path)
+        return Image(png)
 
 
 @dataclass
@@ -347,41 +402,3 @@ class Pipeline(YAMLWizard):
         Save the catalog to the YAML file.
         """
         self.to_yaml_file(os.path.join(CATALOG_DIR, CATALOG_NAME))
-
-    def plot_graph(self):
-        G = nx.DiGraph()
-
-        def format_run_label(run):
-            lines = [
-                f"Node: {run.node}",
-                f"Run: {run.name}",
-            ] + [
-                f"Param {k}: {v.encode('unicode_escape')}"
-                for k, v in run.params.items()
-            ]
-            label = join_str([insert_newlines(line, 50) for line in lines], "\n")
-            return f'"{label}"'
-
-        for run in self.runs:
-            G.add_node(format_run_label(run))
-            edge_labels = {}
-            for input_name, input_dict in run.inputs.items():
-                if not input_dict["node"] in edge_labels:
-                    edge_labels[input_dict["node"]] = {}
-                if not input_dict["run"] in edge_labels[input_dict["node"]]:
-                    edge_labels[input_dict["node"]][input_dict["run"]] = []
-                edge_labels[input_dict["node"]][input_dict["run"]].append(
-                    f'{input_dict["file"]} -> {input_name}'
-                )
-            for src_node, run_dict in edge_labels.items():
-                for src_run, labels in run_dict.items():
-                    G.add_edge(
-                        format_run_label(Run.get(src_node, src_run)),
-                        format_run_label(run),
-                        label='"{}"'.format(join_str(labels, "\n")),
-                    )
-
-        path = os.path.join(CATALOG_DIR, "pipeline.png")
-        with open(path, "wb") as f:
-            f.write(nx.drawing.nx_pydot.to_pydot(G).create_png())
-        print(path)
