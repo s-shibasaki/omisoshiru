@@ -119,11 +119,11 @@ class Run:
             Optional[Run]: The Run instance if found, else None.
         """
         pipeline = Pipeline.from_catalog()
+        runs = pipeline.runs
+        runs = list(filter(lambda x: x.success, runs))
         try:
             return next(
-                filter(
-                    lambda item: item.node == node and item.name == name, pipeline.runs
-                )
+                filter(lambda item: item.node == node and item.name == name, runs)
             )
         except StopIteration:
             return None
@@ -140,6 +140,7 @@ class Run:
             List[Run]: A list of matching Run instances.
         """
         runs = Pipeline.from_catalog().runs
+        runs = list(filter(lambda x: x.success, runs))
         if func is not None:
             runs = list(filter(func, runs))
         return runs
@@ -226,15 +227,12 @@ class Run:
                     f"Node: {run.node}",
                     f"Run: {run.name}",
                 ]
-                + [
-                    f"Param {k}: {v.encode('unicode_escape')}"
-                    for k, v in run.params.items()
-                ]
+                + [f"Param {k}: {v}" for k, v in run.params.items()]
                 + [
                     f"Success: {run.success}",
                 ]
             )
-            label = join_str([insert_newlines(line, 50) for line in lines], "\n")
+            label = join_str([line for line in lines], "\n")
             return f'"{label}"'
 
         for run in cls.search(func=func):
@@ -255,6 +253,8 @@ class Run:
                         format_run_label(run),
                         label='"{}"'.format(join_str(labels, "\n")),
                     )
+        print(G.nodes(data=True))
+        print(G.edges(data=True))
         png = nx.drawing.nx_pydot.to_pydot(G).create_png()
         path = os.path.join(CATALOG_DIR, "pipeline.png")
         with open(path, "wb") as f:
