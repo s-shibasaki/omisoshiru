@@ -253,13 +253,11 @@ class Run:
                         format_run_label(run),
                         label='"{}"'.format(join_str(labels, "\n")),
                     )
-        print(G.nodes(data=True))
-        print(G.edges(data=True))
         png = nx.drawing.nx_pydot.to_pydot(G).create_png()
         path = os.path.join(CATALOG_DIR, "pipeline.png")
         with open(path, "wb") as f:
             f.write(png)
-        print(path)
+        print(f'Graph saved to "{path}".')
         return Image(png)
 
 
