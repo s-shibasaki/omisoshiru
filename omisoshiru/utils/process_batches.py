@@ -5,6 +5,13 @@ import pandas as pd
 import torch
 from tqdm.auto import tqdm
 
+from .convert_dict_of_lists_to_list_of_dicts import (
+    convert_dict_of_lists_to_list_of_dicts,
+)
+from .convert_list_of_dicts_to_dict_of_lists import (
+    convert_list_of_dicts_to_dict_of_lists,
+)
+
 
 def process_batches(
     iterable: Union[pd.DataFrame, pd.Series, list, np.ndarray, torch.Tensor],
@@ -12,6 +19,7 @@ def process_batches(
     batch_size: int,
     result_type: Optional[Literal["numpy", "torch"]] = None,
     axis: Optional[int] = None,
+    dictionary_input: Optional[Union[Literal["numpy", "torch"], bool]] = None,
 ) -> Union[np.ndarray, torch.Tensor, list]:
     """
     Process data in batches using a specified function.
@@ -46,6 +54,9 @@ def process_batches(
         >>> print(result)
         array([2, 4, 6, 8, 10, 12])
     """
+    if dictionary_input:
+        iterable = convert_dict_of_lists_to_list_of_dicts(iterable)
+
     length = len(iterable)
 
     # If iterable is a DataFrame or Series, use iloc for slicing
@@ -58,15 +69,22 @@ def process_batches(
     ]
 
     # Apply the function to each batch
-    results = [function(batch) for batch in tqdm(batches)]
-
-    if result_type is not None:
-        axis = axis if axis is not None else 0
+    results = []
+    for batch in tqdm(batches):
+        if dictionary_input == "numpy":
+            batch = convert_list_of_dicts_to_dict_of_lists(batch, stack="numpy")
+        elif dictionary_input == "torch":
+            batch = convert_list_of_dicts_to_dict_of_lists(batch, stack="torch")
+        elif dictionary_input:
+            batch = convert_list_of_dicts_to_dict_of_lists(batch)
+        results.append(function(batch))
 
     # Concatenate batches based on result_type
     if result_type == "numpy":
         results = np.concatenate(results, axis=axis)
     elif result_type == "torch":
         results = torch.cat(results, dim=axis)
+    elif result_type == "list":
+        results = [sample for batch in results for sample in batch]
 
     return results

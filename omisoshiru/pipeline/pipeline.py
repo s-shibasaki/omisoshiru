@@ -65,7 +65,6 @@ class Run:
         params: Optional[Dict[str, str]] = None,
         kernel_name: Optional[str] = None,
         timeout: Optional[int] = None,
-        success: bool = False,
     ) -> "Run":
         """
         Create a new run instance.
@@ -84,7 +83,6 @@ class Run:
         exist = cls.get(node, name)
         if exist and exist.success:
             raise ValueError(f"Run name `{name}` already exists for node `{node}`.")
-        run = cls(name=name, node=node, inputs=inputs, params=params, success=success)
 
         inputs = inputs or {}
         params = params or {}
@@ -95,6 +93,7 @@ class Run:
                     **{k_: v_ for k_, v_ in zip(["node", "run", "file"], v.split(":"))}
                 )
 
+        run = cls(name=name, node=node, inputs=inputs, params=params, success=False)
         run.run(kernel_name=kernel_name, timeout=timeout)
         run.save()
         return run

@@ -24,7 +24,7 @@ class Wakachi:
             ['これ', 'は', 'テスト', 'です', '。']
         """
         dicdir = unidic_lite.DICDIR.replace("\\", "/")
-        self.__wakachi = MeCab.Tagger(f"-Owakati -d {dicdir}")
+        self._wakachi = MeCab.Tagger(f"-Owakati -d {dicdir}")
         self.allow_whitespace = (
             allow_whitespace if allow_whitespace is not None else False
         )
@@ -46,4 +46,4 @@ class Wakachi:
             raise ValueError(
                 "If 'allow_whitespace' is False, the input string must not contain whitespace characters."
             )
-        return self.__wakachi.parse(string).split()
+        return self._wakachi.parse(string).split()
